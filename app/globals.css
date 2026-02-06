@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Syncopate:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #0A1A72;
+  --accent-gold: #C5A059;
+  --bg-off-white: #FAF9F6;
+}
+
+@layer base {
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--bg-off-white);
+    color: #1a1a1a;
+  }
+  .font-quantum {
+    font-family: 'Syncopate', sans-serif;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+}
+
+@layer components {
+  .luxury-card {
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+  .luxury-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(10, 26, 114, 0.08);
+  }
+  
+  
+  #main-nav {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-scrolled {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    margin-top: 0.5rem !important;
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+    width: 95% !important;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
