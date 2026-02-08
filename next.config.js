@@ -9,9 +9,8 @@ const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   swcMinify: true,
-  experimental: {
-    optimizeCss: true,
-  },
+  // optimizeCss requires 'critters' and can break static page generation
+  // experimental: { optimizeCss: true },
 }
 
 module.exports = nextConfig

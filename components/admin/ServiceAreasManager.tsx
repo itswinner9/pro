@@ -267,7 +267,7 @@ export default function ServiceAreasManager() {
         </div>
         {areas.length === 0 && (
           <div className="text-center py-12 text-slate-500">
-            No service areas yet. Click "Add Area" to create one.
+            No service areas yet. Click &quot;Add Area&quot; to create one.
           </div>
         )}
       </div>

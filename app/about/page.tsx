@@ -56,17 +56,17 @@ export default function AboutPage() {
               <h2 className="text-2xl font-semibold mb-4">Who We Are</h2>
               <p className="text-dark/80 mb-4 leading-relaxed">
                 <strong>PlusPro Services</strong> is your go-to team for all things home repair in the Lower Mainland. 
-                We've been fixing homes and making customers happy for years, and we're not slowing down anytime soon!
+                We&apos;ve been fixing homes and making customers happy for years, and we&apos;re not slowing down anytime soon!
               </p>
               <p className="text-dark/80 mb-4 leading-relaxed">
                 What makes us special? <strong>Experience you can trust.</strong> Our skilled team has seen it all – 
-                from leaky pipes to broken tiles, emergency repairs to full renovations. We know what works, what doesn't, 
+                from leaky pipes to broken tiles, emergency repairs to full renovations. We know what works, what doesn&apos;t, 
                 and how to get your home back in perfect shape, fast.
               </p>
               <p className="text-dark/80 leading-relaxed">
-                We're not just another repair company – we're your neighbors. Locally owned, fully licensed, and 
-                completely insured, we treat every job like it's our own home. Fair prices, honest work, and a smile 
-                with every service call. That's the PlusPro promise.
+                We&apos;re not just another repair company – we&apos;re your neighbors. Locally owned, fully licensed, and 
+                completely insured, we treat every job like it&apos;s our own home. Fair prices, honest work, and a smile 
+                with every service call. That&apos;s the PlusPro promise.
               </p>
             </CardContent>
           </Card>
@@ -80,7 +80,7 @@ export default function AboutPage() {
                   {
                     icon: Award,
                     title: "Years of Experience",
-                    desc: "We've fixed thousands of homes. Your problem? We've seen it before and know exactly how to solve it."
+                    desc: "We&apos;ve fixed thousands of homes. Your problem? We&apos;ve seen it before and know exactly how to solve it."
                   },
                   {
                     icon: Users,
@@ -142,12 +142,12 @@ export default function AboutPage() {
             <CardContent className="pt-6">
               <h2 className="text-2xl font-semibold mb-4">Our Promise to You</h2>
               <p className="text-white/90 mb-4 leading-relaxed text-lg">
-                When you call PlusPro, you're getting more than just a repair service. You're getting:
+                When you call PlusPro, you&apos;re getting more than just a repair service. You&apos;re getting:
               </p>
               <ul className="space-y-3 text-white/90">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-[var(--accent-gold)] mt-0.5 flex-shrink-0" />
-                  <span><strong>Honest pricing</strong> – No surprises, no hidden fees. You'll know the cost before we start.</span>
+                  <span><strong>Honest pricing</strong> – No surprises, no hidden fees. You&apos;ll know the cost before we start.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-[var(--accent-gold)] mt-0.5 flex-shrink-0" />
@@ -155,11 +155,11 @@ export default function AboutPage() {
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-[var(--accent-gold)] mt-0.5 flex-shrink-0" />
-                  <span><strong>Friendly service</strong> – We're not just fixing your home, we're building a relationship.</span>
+                  <span><strong>Friendly service</strong> – We&apos;re not just fixing your home, we&apos;re building a relationship.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-[var(--accent-gold)] mt-0.5 flex-shrink-0" />
-                  <span><strong>Satisfaction guaranteed</strong> – If you're not happy, we're not done. It's that simple.</span>
+                  <span><strong>Satisfaction guaranteed</strong> – If you&apos;re not happy, we&apos;re not done. It&apos;s that simple.</span>
                 </li>
               </ul>
             </CardContent>
@@ -169,7 +169,7 @@ export default function AboutPage() {
           <div className="text-center">
             <h2 className="text-2xl font-semibold mb-4">Ready to Experience the PlusPro Difference?</h2>
             <p className="text-dark/80 mb-6 text-lg">
-              Let's talk about your project. We're here to help, and we'd love to hear from you!
+              Let&apos;s talk about your project. We&apos;re here to help, and we&apos;d love to hear from you!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="bg-[var(--primary-color)] hover:bg-blue-700">

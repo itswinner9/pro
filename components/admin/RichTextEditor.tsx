@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { } from "react";
 import dynamic from "next/dynamic";
 
 // Dynamically import ReactQuill to avoid SSR issues
@@ -18,37 +18,6 @@ export default function RichTextEditor({
   onChange,
   placeholder = "Start writing...",
 }: RichTextEditorProps) {
-  const quillRef = useRef<any>(null);
-
-  useEffect(() => {
-    // Custom image handler
-    if (quillRef.current) {
-      const quill = quillRef.current.getEditor();
-      const toolbar = quill.getModule("toolbar");
-      
-      toolbar.addHandler("image", function () {
-        const input = document.createElement("input");
-        input.setAttribute("type", "file");
-        input.setAttribute("accept", "image/*");
-        input.click();
-
-        input.onchange = async () => {
-          const file = input.files?.[0];
-          if (file) {
-            // You can upload to Supabase Storage here or use a URL
-            // For now, we'll use a data URL or prompt for URL
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              const imageUrl = e.target?.result as string;
-              const range = quill.getSelection(true);
-              quill.insertEmbed(range.index, "image", imageUrl);
-            };
-            reader.readAsDataURL(file);
-          }
-        };
-      });
-    }
-  }, []);
 
   const modules = {
     toolbar: {
@@ -97,7 +66,6 @@ export default function RichTextEditor({
   return (
     <div className="rich-text-editor">
       <ReactQuill
-        ref={quillRef}
         theme="snow"
         value={value}
         onChange={onChange}

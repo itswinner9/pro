@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
+import { createClient } from '@supabase/supabase-js'
 import { SERVICES, LOCATIONS } from '@/lib/types'
-import { createClient } from '@/lib/supabase/server'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://plusproservices.ca' // Update with your actual domain
@@ -30,10 +30,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  // Fetch published blog posts
+  // Fetch published blog posts (anonymous client so sitemap can be statically generated)
   let blogRoutes: MetadataRoute.Sitemap = []
   try {
-    const supabase = await createClient()
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
     const { data: blogs } = await supabase
       .from('blogs')
       .select('slug, updated_at')

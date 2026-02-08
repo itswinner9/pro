@@ -115,7 +115,7 @@ export default function ReviewsPage() {
           <div className="mt-12 text-center bg-white rounded-xl p-8">
             <h2 className="text-2xl font-semibold mb-4">Share Your Experience</h2>
             <p className="text-dark/80 mb-6">
-              Have you used our services? We'd love to hear from you!
+              Have you used our services? We&apos;d love to hear from you!
             </p>
             <p className="text-sm text-gray-600">
               Leave us a review on Google or contact us directly.

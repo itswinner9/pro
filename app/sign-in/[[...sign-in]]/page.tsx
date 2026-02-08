@@ -41,7 +41,7 @@ export default function SignInPage() {
 
         {/* Help Text */}
         <p className="text-center text-xs sm:text-sm text-slate-500 mt-4 sm:mt-6">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <a href="/sign-up" className="text-[var(--primary-color)] hover:underline font-medium">
             Sign up here
           </a>

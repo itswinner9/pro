@@ -1,9 +1,16 @@
 import React from 'react';
+import Image from 'next/image';
 
-const ServiceCard = ({ title, description, image }) => {
+interface ServiceCardProps {
+  title: string;
+  description: string;
+  image: string;
+}
+
+const ServiceCard: React.FC<ServiceCardProps> = ({ title, description, image }) => {
     return (
         <div className="service-card">
-            <img src={image} alt={title} />
+            <Image src={image} alt={title} width={400} height={300} />
             <h2>{title}</h2>
             <p>{description}</p>
             <button>Learn More</button>

@@ -342,7 +342,7 @@ export default function StaffManager() {
         </div>
         {staff.length === 0 && (
           <div className="text-center py-12 text-slate-500">
-            No staff members yet. Click "Add Staff" to create one.
+            No staff members yet. Click &quot;Add Staff&quot; to create one.
           </div>
         )}
       </div>

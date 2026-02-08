@@ -169,7 +169,7 @@ export default function BookServicePage() {
               Booking Submitted!
             </h1>
             <p className="text-slate-600 mb-8 max-w-md mx-auto text-base sm:text-lg leading-relaxed">
-              Thank you for booking with PlusPro Services! We've received your request and will contact you shortly to confirm your appointment. 
+              Thank you for booking with PlusPro Services! We&apos;ve received your request and will contact you shortly to confirm your appointment. 
               Your booking has been saved and is now visible in the admin dashboard.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -208,7 +208,7 @@ export default function BookServicePage() {
             </h1>
             <p className="text-xl text-slate-500 max-w-2xl mx-auto mb-4">
               Fill out the form below to book your appointment with our professional team serving Lower Mainland, BC. 
-              We'll confirm your booking and contact you shortly.
+              We&apos;ll confirm your booking and contact you shortly.
             </p>
             <p className="text-base text-slate-400 max-w-2xl mx-auto">
               Serving Vancouver, Surrey, Burnaby, Richmond, Coquitlam, and all of Lower Mainland, British Columbia

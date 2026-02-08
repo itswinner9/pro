@@ -32,7 +32,7 @@ export default function ContactPage() {
             Contact Us
           </h1>
           <p className="text-xl text-dark/80 mb-12 text-center">
-            Get in touch with us today. We're here to help with all your home repair and maintenance needs.
+            Get in touch with us today. We&apos;re here to help with all your home repair and maintenance needs.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">

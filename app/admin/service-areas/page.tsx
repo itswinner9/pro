@@ -19,16 +19,16 @@ export default async function ServiceAreasPage() {
       <div className="p-8">
         <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {LOCATIONS.map((location) => (
+            {LOCATIONS.map((location, index) => (
               <div
-                key={location.id}
+                key={location.slug || index}
                 className="p-4 border border-slate-200 rounded-lg hover:shadow-md transition-shadow"
               >
                 <div className="flex items-center gap-3 mb-2">
                   <MapPin className="w-5 h-5 text-[#1e3a8a]" />
                   <h3 className="font-semibold text-slate-900">{location.name}</h3>
                 </div>
-                <p className="text-sm text-slate-600">{location.description}</p>
+                <p className="text-sm text-slate-600">Service area in Lower Mainland, BC</p>
               </div>
             ))}
           </div>
