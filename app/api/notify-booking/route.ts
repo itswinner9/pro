@@ -1,50 +1,6 @@
 import { NextResponse } from "next/server";
-import { EMAIL } from "@/lib/utils";
 import { SERVICES } from "@/lib/types";
-
-// Email sending using Resend
-async function sendEmail({
-  to,
-  subject,
-  html,
-}: {
-  to: string | string[];
-  subject: string;
-  html: string;
-}) {
-  // Use Resend for email sending
-  if (process.env.RESEND_API_KEY) {
-    try {
-      const { Resend } = await import("resend");
-      const resendClient = new Resend(process.env.RESEND_API_KEY);
-      
-      const toEmails = Array.isArray(to) ? to : [to];
-      const fromEmail = process.env.FROM_EMAIL || `PlusPro Services <noreply@${process.env.NEXT_PUBLIC_SITE_DOMAIN || 'plusproservices.ca'}>`;
-      
-      const result = await resendClient.emails.send({
-        from: fromEmail,
-        to: toEmails,
-        subject,
-        html,
-      });
-
-      if (result.error) {
-        throw new Error(`Resend error: ${result.error.message || 'Unknown error'}`);
-      }
-
-      console.log("✅ Email sent successfully via Resend:", { to: toEmails, subject });
-      return { success: true };
-    } catch (error) {
-      console.error("❌ Resend error:", error);
-      throw error;
-    }
-  }
-
-  // Fallback: Log to console if Resend not configured
-  console.warn("⚠️ RESEND_API_KEY not configured. Email logged to console:");
-  console.log("📧 Email would be sent:", { to, subject });
-  return { success: false, logged: true };
-}
+import { sendEmail } from "@/lib/email";
 
 export async function POST(request: Request) {
   try {
