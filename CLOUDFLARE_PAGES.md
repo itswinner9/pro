@@ -12,7 +12,9 @@ If your build succeeds but deploy fails with Wrangler/Worker errors:
    - **Build command:** `npm run build`
    - **Build output directory:** `.next` (or whatever your framework preset uses)
 
-The repo includes a no-op `npm run deploy` script so the deploy step passes without running Wrangler. You do **not** need `npx wrangler deploy` for a Next.js Git-connected project.
+The repo includes:
+- A no-op `npm run deploy` script (use that as Deploy command if you prefer).
+- A minimal `wrangler.jsonc` + `wrangler-worker.js` so **`npx wrangler deploy`** also succeeds (deploys a placeholder Worker; your site is still served by Pages from the build output).
 
 ## Environment variables
 

@@ -31,11 +31,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // Fetch published blog posts (anonymous client so sitemap can be statically generated)
-  // Skip if env vars missing (e.g. during static build before env is available)
+  // Skip if env vars missing or invalid (e.g. during static build or unset env)
   let blogRoutes: MetadataRoute.Sitemap = []
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()
-  if (supabaseUrl && supabaseKey) {
+  const hasValidSupabase =
+    typeof supabaseUrl === 'string' &&
+    supabaseUrl.startsWith('https://') &&
+    typeof supabaseKey === 'string' &&
+    supabaseKey.length > 0
+  if (hasValidSupabase) {
     try {
       const supabase = createClient(supabaseUrl, supabaseKey)
       const { data: blogs } = await supabase
