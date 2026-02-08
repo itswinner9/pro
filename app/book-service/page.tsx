@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +13,10 @@ import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SERVICES, ServiceType } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
-import { Upload, X, CheckCircle } from "lucide-react";
+import { Upload, X, CheckCircle, Calendar, Clock, MapPin } from "lucide-react";
+import { FormLoading, ButtonLoading, LoadingSpinner } from "@/components/ui/loading";
+import Link from "next/link";
+import { PHONE_NUMBER } from "@/lib/utils";
 
 const bookingSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -92,40 +96,56 @@ export default function BookServicePage() {
       setUploading(true);
       setError(null);
 
-      // Upload images
+      // Upload images first
       const imageUrls = await uploadImages(images);
 
-      // Submit booking
+      // Save to database
       const supabase = createClient();
-      const { error: insertError } = await supabase.from("bookings").insert({
-        name: data.name,
-        phone: data.phone,
-        email: data.email,
-        address: data.address,
-        service: data.service,
-        date: data.date,
-        time: data.time,
-        message: data.message || null,
-        images: imageUrls,
-        status: "new",
-      });
+      const { data: insertedData, error: dbError } = await supabase
+        .from("bookings")
+        .insert({
+          name: data.name,
+          phone: data.phone,
+          email: data.email,
+          address: data.address,
+          service: data.service,
+          date: data.date,
+          time: data.time,
+          message: data.message || null,
+          images: imageUrls,
+          status: "new",
+        })
+        .select()
+        .single();
 
-      if (insertError) {
-        throw new Error(insertError.message);
+      if (dbError) {
+        console.error("Database error:", dbError);
+        throw new Error(`Failed to save booking: ${dbError.message}`);
       }
 
-      // Trigger email notification (will be handled by Netlify function)
-      await fetch("/api/notify-booking", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, images: imageUrls }),
-      });
+      if (!insertedData) {
+        throw new Error("Failed to save booking. Please try again.");
+      }
 
+      // Trigger email notification (non-blocking)
+      try {
+        await fetch("/api/notify-booking", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data, images: imageUrls }),
+        });
+      } catch (notifyError) {
+        // Don't fail the booking if notification fails
+        console.warn("Notification failed:", notifyError);
+      }
+
+      // Only show success if data was actually saved
       setSubmitted(true);
       reset();
       setImages([]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to submit booking");
+      console.error("Booking submission error:", err);
+      setError(err instanceof Error ? err.message : "Failed to submit booking. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -133,172 +153,291 @@ export default function BookServicePage() {
 
   if (submitted) {
     return (
-      <div className="py-16 bg-background min-h-screen">
-        <div className="container mx-auto px-4">
-          <Card className="max-w-2xl mx-auto">
-            <CardContent className="pt-6 text-center">
-              <CheckCircle className="w-16 h-16 text-success mx-auto mb-4" />
-              <h2 className="text-2xl font-semibold mb-4">Booking Submitted Successfully!</h2>
-              <p className="text-dark/80 mb-6">
-                Thank you for booking with PlusPro Services. We've received your request and will contact you shortly to confirm your appointment.
-              </p>
-              <Button asChild>
-                <a href="/">Return Home</a>
-              </Button>
-            </CardContent>
-          </Card>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+        {/* Background accent */}
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-50 skew-x-12 translate-x-1/2 -z-10"></div>
+        
+        <div className="w-full max-w-2xl relative z-10">
+          <div className="luxury-card bg-white p-8 sm:p-12 rounded-[24px] shadow-xl border border-green-100 text-center">
+            <div className="w-20 h-20 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-10 h-10 text-green-600" />
+            </div>
+            <span className="font-quantum text-[10px] tracking-[0.5em] text-[var(--accent-gold)] mb-4 block font-bold uppercase">
+              Success
+            </span>
+            <h1 className="font-quantum text-3xl sm:text-4xl font-bold text-[var(--primary-color)] mb-4">
+              Booking Submitted!
+            </h1>
+            <p className="text-slate-600 mb-8 max-w-md mx-auto text-base sm:text-lg leading-relaxed">
+              Thank you for booking with PlusPro Services! We've received your request and will contact you shortly to confirm your appointment. 
+              Your booking has been saved and is now visible in the admin dashboard.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/"
+                className="bg-[var(--primary-color)] text-white px-8 py-3 rounded-xl text-sm font-bold uppercase tracking-widest hover:bg-[var(--primary-color)]/90 transition-all w-full sm:w-auto"
+              >
+                Back to Home
+              </Link>
+              <Link
+                href="/book-service"
+                className="border border-slate-200 bg-white text-slate-900 px-8 py-3 rounded-xl text-sm font-bold uppercase tracking-widest hover:bg-slate-50 transition-all w-full sm:w-auto"
+              >
+                Book Another Service
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="py-16 bg-background min-h-screen">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-[var(--bg-off-white)] relative overflow-hidden">
+      {/* Background accent */}
+      <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-50 skew-x-12 translate-x-1/2 -z-10"></div>
+      
+      <div className="container mx-auto px-6 py-16 relative z-10">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-quantum text-primary mb-6 text-center">
-            Book a Service
-          </h1>
-          <p className="text-xl text-dark/80 mb-8 text-center">
-            Fill out the form below to schedule your service appointment.
-          </p>
+          <div className="text-center mb-12">
+            <span className="font-quantum text-[10px] tracking-[0.5em] text-[var(--accent-gold)] mb-4 block font-bold">
+              Book Service | Lower Mainland BC
+            </span>
+            <h1 className="font-quantum text-4xl md:text-5xl font-bold text-[var(--primary-color)] mb-6">
+              Schedule Your Service Today
+            </h1>
+            <p className="text-xl text-slate-500 max-w-2xl mx-auto mb-4">
+              Fill out the form below to book your appointment with our professional team serving Lower Mainland, BC. 
+              We'll confirm your booking and contact you shortly.
+            </p>
+            <p className="text-base text-slate-400 max-w-2xl mx-auto">
+              Serving Vancouver, Surrey, Burnaby, Richmond, Coquitlam, and all of Lower Mainland, British Columbia
+            </p>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Service Booking Form</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Strong CTA Banner */}
+          <div className="mb-8 bg-gradient-to-r from-[var(--primary-color)] to-blue-700 rounded-2xl p-6 md:p-8 text-white text-center">
+            <h2 className="font-quantum text-2xl md:text-3xl font-bold mb-3">
+              Ready to Get Started?
+            </h2>
+            <p className="text-lg text-white/90 mb-6 max-w-2xl mx-auto">
+              Book your service now and get professional home repair in Lower Mainland BC. Same-day service available for emergency repairs!
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href={`tel:${PHONE_NUMBER.replace(/\D/g, '')}`}
+                className="bg-white text-[var(--primary-color)] px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined">call</span>
+                Call {PHONE_NUMBER} Now
+              </a>
+              <Link
+                href="/request-quote"
+                className="border-2 border-white text-white px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-white/10 transition-all"
+              >
+                Get Free Quote Instead
+              </Link>
+            </div>
+          </div>
+
+          {(isSubmitting || uploading) && <FormLoading message={uploading ? "Uploading images..." : "Submitting booking..."} />}
+
+          <div className="luxury-card bg-white p-8 md:p-12 rounded-[24px] shadow-sm border border-slate-100">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label htmlFor="name">Full Name *</Label>
-                  <Input id="name" {...register("name")} />
+                  <Label htmlFor="name" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                    Full Name *
+                  </Label>
+                  <Input
+                    id="name"
+                    {...register("name")}
+                    className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                    placeholder="John Doe"
+                  />
                   {errors.name && (
                     <p className="text-sm text-red-600 mt-1">{errors.name.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <Label htmlFor="phone">Phone Number *</Label>
-                  <Input id="phone" type="tel" {...register("phone")} />
+                  <Label htmlFor="phone" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                    Phone Number *
+                  </Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    {...register("phone")}
+                    className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                    placeholder="(555) 123-4567"
+                  />
                   {errors.phone && (
                     <p className="text-sm text-red-600 mt-1">{errors.phone.message}</p>
                   )}
                 </div>
+              </div>
 
-                <div>
-                  <Label htmlFor="email">Email *</Label>
-                  <Input id="email" type="email" {...register("email")} />
-                  {errors.email && (
-                    <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="address">Service Address *</Label>
-                  <Input id="address" {...register("address")} />
-                  {errors.address && (
-                    <p className="text-sm text-red-600 mt-1">{errors.address.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="service">Service Type *</Label>
-                  <Select id="service" {...register("service")}>
-                    <option value="">Select a service</option>
-                    {SERVICES.map((service) => (
-                      <option key={service.id} value={service.id}>
-                        {service.title}
-                      </option>
-                    ))}
-                  </Select>
-                  {errors.service && (
-                    <p className="text-sm text-red-600 mt-1">{errors.service.message}</p>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="date">Preferred Date *</Label>
-                    <Input id="date" type="date" {...register("date")} />
-                    {errors.date && (
-                      <p className="text-sm text-red-600 mt-1">{errors.date.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="time">Preferred Time *</Label>
-                    <Input id="time" type="time" {...register("time")} />
-                    {errors.time && (
-                      <p className="text-sm text-red-600 mt-1">{errors.time.message}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="message">Additional Details</Label>
-                  <Textarea
-                    id="message"
-                    rows={4}
-                    {...register("message")}
-                    placeholder="Tell us more about your service needs..."
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="images">Upload Photos (Optional, max 5)</Label>
-                  <div className="mt-2">
-                    <input
-                      type="file"
-                      id="images"
-                      accept="image/*"
-                      multiple
-                      onChange={handleImageChange}
-                      disabled={images.length >= 5}
-                      className="hidden"
-                    />
-                    <label htmlFor="images">
-                      <Button type="button" variant="outline" asChild>
-                        <span>
-                          <Upload className="w-4 h-4 mr-2" />
-                          Choose Images
-                        </span>
-                      </Button>
-                    </label>
-                    {images.length > 0 && (
-                      <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {images.map((image, index) => (
-                          <div key={index} className="relative">
-                            <img
-                              src={URL.createObjectURL(image)}
-                              alt={`Upload ${index + 1}`}
-                              className="w-full h-32 object-cover rounded-lg"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => removeImage(index)}
-                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                    {error}
-                  </div>
+              <div>
+                <Label htmlFor="email" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                  Email Address *
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                  placeholder="john@example.com"
+                />
+                {errors.email && (
+                  <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
                 )}
+              </div>
 
-                <Button type="submit" size="lg" className="w-full" disabled={isSubmitting || uploading}>
-                  {uploading ? "Uploading..." : isSubmitting ? "Submitting..." : "Book Service"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+              <div>
+                <Label htmlFor="address" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                  Service Address *
+                </Label>
+                <Input
+                  id="address"
+                  {...register("address")}
+                  className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                  placeholder="123 Main St, City, Province"
+                />
+                {errors.address && (
+                  <p className="text-sm text-red-600 mt-1">{errors.address.message}</p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="service" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                  Service Type *
+                </Label>
+                <Select
+                  id="service"
+                  {...register("service")}
+                  className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                >
+                  <option value="">Select a service</option>
+                  {SERVICES.map((service) => (
+                    <option key={service.id} value={service.id}>
+                      {service.title}
+                    </option>
+                  ))}
+                </Select>
+                {errors.service && (
+                  <p className="text-sm text-red-600 mt-1">{errors.service.message}</p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="date" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                  Preferred Date *
+                </Label>
+                <Input
+                  id="date"
+                  type="date"
+                  {...register("date")}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                />
+                {errors.date && (
+                  <p className="text-sm text-red-600 mt-1">{errors.date.message}</p>
+                )}
+              </div>
+
+                <div>
+                  <Label htmlFor="time" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                    Preferred Time *
+                  </Label>
+                  <Input
+                    id="time"
+                    type="time"
+                    {...register("time")}
+                    className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                  />
+                  {errors.time && (
+                    <p className="text-sm text-red-600 mt-1">{errors.time.message}</p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="message" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                  Additional Details
+                </Label>
+                <Textarea
+                  id="message"
+                  rows={4}
+                  {...register("message")}
+                  className="mt-2 border-slate-200 rounded-xl focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                  placeholder="Tell us more about your service needs..."
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="images" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                  Upload Photos (Optional, max 5)
+                </Label>
+                <div className="mt-2">
+                  <input
+                    type="file"
+                    id="images"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                    disabled={images.length >= 5}
+                    className="hidden"
+                  />
+                  <label htmlFor="images">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={images.length >= 5}
+                      className="border-slate-200 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      {images.length >= 5 ? "Maximum 5 images" : `Choose Images (${images.length}/5)`}
+                    </Button>
+                  </label>
+                  {images.length > 0 && (
+                    <div className="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {images.map((image, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={URL.createObjectURL(image)}
+                            alt={`Upload ${index + 1}`}
+                            className="w-full h-32 object-cover rounded-xl border border-slate-200"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors shadow-lg"
+                            title="Remove image"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl">
+                  {error}
+                </div>
+              )}
+
+              <ButtonLoading
+                loading={isSubmitting || uploading}
+                className="w-full bg-[var(--primary-color)] text-white rounded-xl h-14 font-bold tracking-widest text-xs uppercase hover:bg-[var(--primary-color)]/90 transition-all hover:shadow-lg"
+              >
+                {uploading ? "Uploading..." : isSubmitting ? "Submitting..." : "Book Service"}
+              </ButtonLoading>
+            </form>
+          </div>
         </div>
       </div>
     </div>

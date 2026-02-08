@@ -1,9 +1,22 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
 
-export const metadata = {
-  title: "Customer Reviews | PlusPro Services",
-  description: "Read what our customers say about PlusPro Services. 5-star rated handyman and plumbing services in Lower Mainland, BC.",
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Customer Reviews & Testimonials | 5-Star Rated PlusPro Services | Lower Mainland BC",
+  description: "Read 5-star customer reviews for PlusPro Services. Trusted handyman and plumbing services in Vancouver, Surrey, Burnaby, Richmond, Coquitlam. See what our customers say!",
+  keywords: "PlusPro Services reviews, handyman reviews Vancouver, plumbing reviews Surrey, customer testimonials Burnaby, 5 star home repair BC",
+  openGraph: {
+    title: "Customer Reviews | 5-Star Rated PlusPro Services | Lower Mainland BC",
+    description: "Read what our customers say about PlusPro Services. 5-star rated handyman and plumbing services in Lower Mainland, BC.",
+    type: "website",
+    locale: "en_CA",
+    url: "https://plusproservices.ca/reviews",
+  },
+  alternates: {
+    canonical: "https://plusproservices.ca/reviews",
+  },
 };
 
 const reviews = [

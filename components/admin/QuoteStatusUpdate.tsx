@@ -10,12 +10,24 @@ type Status = "new" | "contacted" | "quoted" | "completed" | "cancelled";
 interface QuoteStatusUpdateProps {
   quoteId: string;
   currentStatus: Status;
+  canEdit: boolean;
 }
 
-export default function QuoteStatusUpdate({ quoteId, currentStatus }: QuoteStatusUpdateProps) {
+export default function QuoteStatusUpdate({ quoteId, currentStatus, canEdit }: QuoteStatusUpdateProps) {
   const [status, setStatus] = useState(currentStatus);
   const [updating, setUpdating] = useState(false);
   const router = useRouter();
+
+  if (!canEdit) {
+    return (
+      <div className="flex items-center gap-2">
+        <label className="text-sm font-medium">Status:</label>
+        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
+          {status} (Read Only)
+        </span>
+      </div>
+    );
+  }
 
   const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newStatus = e.target.value as Status;
@@ -60,4 +72,3 @@ export default function QuoteStatusUpdate({ quoteId, currentStatus }: QuoteStatu
     </div>
   );
 }
-

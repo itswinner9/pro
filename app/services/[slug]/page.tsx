@@ -5,11 +5,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SERVICES } from "@/lib/types";
 import { Phone, CheckCircle } from "lucide-react";
 import { PHONE_NUMBER } from "@/lib/utils";
+import EnhancedSchema from "@/components/seo/EnhancedSchema";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 const serviceDetails: Record<string, {
@@ -99,8 +100,9 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps) {
-  const service = SERVICES.find((s) => s.slug === `/services/${params.slug}`);
-  const details = serviceDetails[params.slug];
+  const { slug } = await params;
+  const service = SERVICES.find((s) => s.slug === `/services/${slug}`);
+  const details = serviceDetails[slug];
   
   if (!service || !details) {
     return {
@@ -108,22 +110,38 @@ export async function generateMetadata({ params }: PageProps) {
     };
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plusproservices.ca";
+  
   return {
-    title: `${details.title} | PlusPro Services`,
-    description: details.metaDescription,
+    title: `${details.title} in Lower Mainland BC | PlusPro Services`,
+    description: details.metaDescription || `${details.title} in Vancouver, Surrey, Burnaby, Richmond, Coquitlam. Professional, licensed, insured. Same-day service available.`,
+    keywords: `${slug} Lower Mainland, ${slug} Vancouver, ${slug} Surrey, ${slug} Burnaby, home repair BC`,
+    openGraph: {
+      title: `${details.title} | PlusPro Services | Lower Mainland BC`,
+      description: details.metaDescription,
+      type: "website",
+      locale: "en_CA",
+      url: `${baseUrl}${service.slug}`,
+    },
+    alternates: {
+      canonical: `${baseUrl}${service.slug}`,
+    },
   };
 }
 
-export default function ServicePage({ params }: PageProps) {
-  const service = SERVICES.find((s) => s.slug === `/services/${params.slug}`);
-  const details = serviceDetails[params.slug];
+export default async function ServicePage({ params }: PageProps) {
+  const { slug } = await params;
+  const service = SERVICES.find((s) => s.slug === `/services/${slug}`);
+  const details = serviceDetails[slug];
 
   if (!service || !details) {
     notFound();
   }
 
   return (
-    <div className="py-16 bg-background min-h-screen">
+    <>
+      <EnhancedSchema type="Service" serviceName={details.title} locationName="Lower Mainland" />
+      <div className="py-16 bg-background min-h-screen">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-quantum text-primary mb-6">
@@ -174,6 +192,7 @@ export default function ServicePage({ params }: PageProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

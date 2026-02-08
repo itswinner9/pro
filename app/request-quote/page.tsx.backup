@@ -1,0 +1,450 @@
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
+import { SERVICES, ServiceType } from "@/lib/types";
+import { createClient } from "@/lib/supabase/client";
+import { Upload, X, CheckCircle, Phone, MessageCircle, Camera } from "lucide-react";
+import { FormLoading, ButtonLoading } from "@/components/ui/loading";
+
+const quoteSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  phone: z.string().min(10, "Valid phone number is required"),
+  email: z.string().email("Valid email is required"),
+  service: z.enum([
+    "drain-cleaning",
+    "plumbing-repairs",
+    "bathroom-repairs",
+    "tile-installation",
+    "handyman-services",
+    "emergency-repairs",
+  ] as const),
+  message: z.string().optional(),
+});
+
+type QuoteFormData = z.infer<typeof quoteSchema>;
+
+export default function RequestQuotePage() {
+  const [images, setImages] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<QuoteFormData>({
+    resolver: zodResolver(quoteSchema),
+  });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const newImages = files.slice(0, 5 - images.length);
+    setImages((prev) => [...prev, ...newImages]);
+  };
+
+  const removeImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const uploadImages = async (files: File[]): Promise<string[]> => {
+    if (files.length === 0) return [];
+
+    const supabase = createClient();
+    const uploadedUrls: string[] = [];
+
+    for (const file of files) {
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}-${file.name}`;
+      const { data, error } = await supabase.storage
+        .from("quote-images")
+        .upload(fileName, file);
+
+      if (error) {
+        throw new Error(`Failed to upload ${file.name}: ${error.message}`);
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("quote-images")
+        .getPublicUrl(fileName);
+
+      if (urlData?.publicUrl) {
+        uploadedUrls.push(urlData.publicUrl);
+      }
+    }
+
+    return uploadedUrls;
+  };
+
+  const onSubmit = async (data: QuoteFormData) => {
+    try {
+      setUploading(true);
+      setError(null);
+
+      // Upload images
+      const imageUrls = await uploadImages(images);
+
+      // Submit quote request
+      const supabase = createClient();
+      const { error: insertError } = await supabase.from("quotes").insert({
+        name: data.name,
+        phone: data.phone,
+        email: data.email,
+        service: data.service,
+        message: data.message || null,
+        images: imageUrls,
+        status: "new",
+      });
+
+      if (insertError) {
+        throw new Error(insertError.message);
+      }
+
+      // Trigger email notification (will be handled by Netlify function)
+      await fetch("/api/notify-quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, images: imageUrls }),
+      });
+
+      setSubmitted(true);
+      reset();
+      setImages([]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to submit quote request");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (submitted) {
+    return (
+      <div className="py-16 bg-background min-h-screen">
+        <div className="container mx-auto px-4">
+          <Card className="max-w-2xl mx-auto">
+            <CardContent className="pt-6 text-center">
+              <CheckCircle className="w-16 h-16 text-success mx-auto mb-4" />
+              <h2 className="text-2xl font-semibold mb-4">Quote Request Submitted!</h2>
+              <p className="text-dark/80 mb-6">
+                Thank you for requesting a quote from PlusPro Services. We've received your request and will contact you within 24 hours with a detailed quote.
+              </p>
+              <Button asChild>
+                <a href="/">Return Home</a>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="py-16 bg-background min-h-screen">
+      <div className="container mx-auto px-6 py-16 relative z-10">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="inline-block px-4 py-2 bg-[var(--accent-gold)]/20 rounded-full text-[10px] font-bold tracking-widest text-white mb-6">
+              Free Quote
+            </span>
+            <h1 className="font-quantum text-3xl md:text-4xl font-bold text-[var(--primary-color)] mb-6">
+              Request Your Quote
+            </h1>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-8">
+              Tell us about your project and we'll provide you with a detailed, no-obligation quote.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl">
+            {/* Left Column - Form */}
+            <div className="lg:col-span-2">
+              <div className="luxury-card bg-white p-8 md:p-12 rounded-[24px] shadow-sm border border-slate-100">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="name" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                        Full Name *
+                      </Label>
+                      <Input
+                        id="name"
+                        {...register("name")}
+                        className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                        placeholder="John Doe"
+                      />
+                      {errors.name && (
+                        <p className="text-sm text-red-600 mt-1">{errors.name.message}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phone" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                        Phone Number *
+                      </Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        {...register("phone")}
+                        className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                        placeholder="(555) 123-4567"
+                      />
+                      {errors.phone && (
+                        <p className="text-sm text-red-600 mt-1">{errors.phone.message}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="email" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                        Email Address *
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        {...register("email")}
+                        className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                        placeholder="john@example.com"
+                      />
+                      {errors.email && (
+                        <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="service" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                        Service Type *
+                      </Label>
+                      <Select
+                        id="service"
+                        {...register("service")}
+                        className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                      >
+                        <option value="">Select a service</option>
+                        {SERVICES.map((service) => (
+                          <option key={service.id} value={service.id}>
+                            {service.title}
+                          </option>
+                        ))}
+                      </Select>
+      </div>
+    </div>
+  );
+}
+
+return (
+  <div className="py-16 bg-background min-h-screen">
+    <div className="container mx-auto px-6 py-16 relative z-10">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <span className="inline-block px-4 py-2 bg-[var(--accent-gold)]/20 rounded-full text-[10px] font-bold tracking-widest text-white mb-6">
+            Free Quote
+          </span>
+          <h1 className="font-quantum text-3xl md:text-4xl font-bold text-[var(--primary-color)] mb-6">
+            Request Your Quote
+          </h1>
+          <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-8">
+            Tell us about your project and we'll provide you with a detailed, no-obligation quote.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl">
+          {/* Left Column - Form */}
+          <div className="lg:col-span-2">
+            <div className="luxury-card bg-white p-8 md:p-12 rounded-[24px] shadow-sm border border-slate-100">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="name" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                      Full Name *
+                    </Label>
+                    <Input
+                      id="name"
+                      {...register("name")}
+                      className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                      placeholder="John Doe"
+                    />
+                    {errors.name && (
+                      <p className="text-sm text-red-600 mt-1">{errors.name.message}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="phone" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                      Phone Number *
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      {...register("phone")}
+                      className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                      placeholder="(555) 123-4567"
+                    />
+                    {errors.phone && (
+                      <p className="text-sm text-red-600 mt-1">{errors.phone.message}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="email" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                      Email Address *
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      {...register("email")}
+                      className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                      placeholder="john@example.com"
+                    />
+                    {errors.email && (
+                      <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="service" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                      Service Type *
+                    </Label>
+                    <Select
+                      id="service"
+                      {...register("service")}
+                      className="mt-2 border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10"
+                    >
+                      <option value="">Select a service</option>
+                      {SERVICES.map((service) => (
+                        <option key={service.id} value={service.id}>
+                          {service.title}
+                        </option>
+                      ))}
+                    </Select>
+                    {errors.service && (
+                      <p className="text-sm text-red-600 mt-1">{errors.service.message}</p>
+                    )}
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <Label htmlFor="message" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                      Project Details
+                    </Label>
+                    <Textarea
+                      id="message"
+                      rows={6}
+                      {...register("message")}
+                      className="mt-2 border-slate-200 rounded-xl focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10 resize-none"
+                      placeholder="Please describe your project in detail. Include any specific requirements, timelines, or concerns..."
+                    />
+                  </div>
+                </div>
+
+                <div className="md:col-span-2">
+                  <Label htmlFor="images" className="text-xs font-bold tracking-widest uppercase text-slate-700">
+                    Upload Photos (Optional, max 5)
+                  </Label>
+                  <div className="mt-2">
+                    <input
+                      type="file"
+                      id="images"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageChange}
+                      disabled={images.length >= 5}
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="images"
+                      className="flex items-center gap-3 px-6 py-4 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:border-[var(--primary-color)] hover:bg-slate-50 transition-all"
+                    >
+                      <Upload className="w-5 h-5" />
+                      <span className="text-sm font-medium">Choose Images</span>
+                    </label>
+                    {images.length > 0 && (
+                      <div className="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {images.map((image, index) => (
+                          <div key={index} className="relative">
+                            <img
+                              src={URL.createObjectURL(image)}
+                              alt={`Upload ${index + 1}`}
+                              className="w-full h-32 object-cover rounded-xl"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl">
+                    {error}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-center mt-8">
+                  <ButtonLoading
+                    loading={isSubmitting || uploading}
+                    className="w-full bg-[var(--primary-color)] text-white rounded-xl h-14 font-bold tracking-widest text-xs uppercase hover:bg-[var(--primary-color)]/90 transition-all"
+                  >
+                    {uploading ? "Uploading..." : isSubmitting ? "Submitting..." : "Request Quote"}
+                  </ButtonLoading>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          {/* Right Column - Contact Info */}
+          <div className="lg:col-span-1">
+            <div className="luxury-card bg-gradient-to-br from-blue-50 to-white p-8 rounded-[24px] shadow-sm border border-blue-100">
+              <h2 className="font-quantum text-xl font-bold text-white mb-6 text-center">
+                Need Faster Service?
+              </h2>
+              <p className="text-white/90 text-center mb-8">
+                Skip the form and get immediate assistance. Call or text us directly for quick response.
+              </p>
+              
+              <div className="space-y-6">
+                <a
+                  href={`tel:${PHONE_NUMBER.replace(/\D/g, '')}`}
+                  className="flex items-center justify-center gap-4 p-6 bg-white/20 rounded-xl hover:bg-white/30 transition-all group"
+                >
+                  <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
+                    <Phone className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-bold text-white mb-2">Call Now</p>
+                    <p className="text-sm text-white/90">{PHONE_NUMBER}</p>
+                  </div>
+                </a>
+
+                <a
+                  href="sms:778-715-2994"
+                  className="flex items-center justify-center gap-4 p-6 bg-green-600 rounded-xl hover:bg-green-700 transition-all group"
+                >
+                  <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
+                    <MessageCircle className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-bold text-white mb-2">Text Images</p>
+                    <p className="text-sm text-white/90">778-715-2994</p>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      {(isSubmitting || uploading) && <FormLoading message={uploading ? "Uploading images..." : "Submitting quote..."} />}
+    </div>
+  </div>
+);

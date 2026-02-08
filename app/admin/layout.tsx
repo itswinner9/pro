@@ -1,20 +1,34 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@clerk/nextjs/server";
+import { canViewAdmin, getUserRole, canEdit } from "@/lib/auth";
+import AdminSidebar from "@/components/admin/AdminSidebar";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/admin/login");
+  const { userId } = await auth();
+  
+  if (!userId) {
+    redirect("/sign-in?redirect_url=/admin/dashboard");
   }
 
-  return <>{children}</>;
-}
+  const canView = await canViewAdmin();
+  
+  if (!canView) {
+    redirect("/");
+  }
 
+  const role = await getUserRole();
+  const canEditData = await canEdit();
+
+  return (
+    <div className="flex min-h-screen bg-slate-50">
+      <AdminSidebar role={role} canEdit={canEditData} />
+      <main className="flex-1 ml-64">
+        {children}
+      </main>
+    </div>
+  );
+}

@@ -1,7 +1,24 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import { SERVICES, LOCATIONS } from "@/lib/types";
 import { PHONE_NUMBER } from "@/lib/utils";
 import RotatingCityText from "@/components/RotatingCityText";
+
+export const metadata: Metadata = {
+  title: "PlusPro Services | Professional Home Repair in Lower Mainland BC",
+  description: "Expert handyman, plumbing, drain cleaning & bathroom repair services in Lower Mainland, BC. Serving Vancouver, Surrey, Burnaby & more. Fast, reliable, licensed & insured. Get a free quote today!",
+  keywords: "handyman Lower Mainland, plumbing Vancouver, drain cleaning Surrey, bathroom repairs Burnaby, home repair BC, emergency repairs Lower Mainland, tile installation Vancouver, licensed handyman BC",
+  openGraph: {
+    title: "PlusPro Services | Professional Home Repair in Lower Mainland BC",
+    description: "Expert handyman, plumbing, drain cleaning & bathroom repair services in Lower Mainland, BC. Fast, reliable, licensed & insured.",
+    type: "website",
+    locale: "en_CA",
+    url: "https://plusproservices.ca",
+  },
+  alternates: {
+    canonical: "https://plusproservices.ca",
+  },
+};
 
 const serviceIcons: Record<string, string> = {
   'drain-cleaning': 'water_damage',
@@ -16,11 +33,11 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center pt-32 px-6 overflow-hidden bg-white">
+      <section className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden bg-white">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-slate-50 skew-x-12 translate-x-1/2 -z-10"></div>
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <span className="font-quantum text-[10px] tracking-[0.5em] text-[var(--accent-gold)] mb-8 block font-bold">
-            The Gold Standard in Repair
+            The Gold Standard in Home Repair | Lower Mainland BC
           </span>
           <h1 className="font-quantum text-4xl md:text-7xl font-bold leading-[1.2] text-slate-900 mb-8">
             Professional <br className="hidden md:block" /> Home Repair in <br className="hidden md:block" />
@@ -28,8 +45,11 @@ export default function HomePage() {
               <RotatingCityText />
             </span>
           </h1>
-          <p className="max-w-2xl mx-auto text-lg md:text-xl text-slate-500 font-medium mb-12 leading-relaxed">
-            Fast, reliable, and affordable service for your home. Experience premium craftsmanship tailored to your local needs.
+          <p className="max-w-2xl mx-auto text-lg md:text-xl text-slate-500 font-medium mb-4 leading-relaxed">
+            Trusted by homeowners across Lower Mainland, BC. Fast, reliable, and affordable service for your home. Experience premium craftsmanship tailored to your local needs.
+          </p>
+          <p className="max-w-2xl mx-auto text-base text-slate-400 mb-12">
+            Serving Vancouver, Surrey, Burnaby, Richmond, Coquitlam, and all of Lower Mainland, British Columbia
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <Link
@@ -54,8 +74,11 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-24">
             <h2 className="font-quantum text-3xl md:text-4xl font-bold mb-6 text-[var(--primary-color)]">
-              Our Services
+              Our Services in Lower Mainland BC
             </h2>
+            <p className="text-lg text-slate-600 max-w-3xl mx-auto mb-6">
+              Comprehensive home repair solutions for Lower Mainland homeowners. From emergency plumbing to complete bathroom renovations, we've got you covered.
+            </p>
             <div className="w-20 h-1 bg-[var(--accent-gold)] mx-auto"></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -109,6 +132,9 @@ export default function HomePage() {
             <h2 className="font-quantum text-3xl md:text-4xl font-bold text-[var(--primary-color)]">
               How It Works
             </h2>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto mt-4">
+              Simple, fast, and reliable service for Lower Mainland homeowners
+            </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 relative">
             {[
@@ -159,22 +185,29 @@ export default function HomePage() {
       </section>
 
       {/* Why Choose Section */}
-      <section className="py-24 px-6 bg-[var(--primary-color)] text-white">
+      <section className="py-24 px-6 bg-[var(--primary-color)] text-white" id="why-choose">
         <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="font-quantum text-3xl md:text-4xl font-bold mb-4">Why Choose PlusPro in Lower Mainland BC?</h2>
+            <p className="text-lg text-white/80 max-w-2xl mx-auto">
+              Years of experience serving Lower Mainland homeowners, trusted expertise, and a commitment to making your home perfect. 
+              That's what sets us apart in Vancouver, Surrey, Burnaby, and across BC.
+            </p>
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 text-center">
             {[
-              { icon: 'location_on', title: 'Local', desc: 'BC Expertise' },
-              { icon: 'bolt', title: 'Fast Response', desc: 'Same Day Service' },
-              { icon: 'payments', title: 'Fair Pricing', desc: 'Upfront Quotes' },
-              { icon: 'verified', title: 'Skilled', desc: 'Certified Pros' },
-              { icon: 'shield_with_heart', title: 'Insured', desc: 'Total Peace of Mind' },
+              { icon: 'location_on', title: 'Local Experts', desc: 'Lower Mainland BC Born & Raised' },
+              { icon: 'bolt', title: 'Lightning Fast', desc: 'Same Day Available' },
+              { icon: 'payments', title: 'Fair & Honest', desc: 'Upfront Pricing' },
+              { icon: 'verified', title: 'Experienced Pros', desc: 'Years of Know-How' },
+              { icon: 'shield_with_heart', title: 'Fully Protected', desc: 'Licensed & Insured' },
             ].map((item, index) => (
               <div key={index} className="space-y-4">
                 <span className="material-symbols-outlined text-4xl text-[var(--accent-gold)]">
                   {item.icon}
                 </span>
-                <h4 className="font-quantum text-[10px] tracking-widest font-bold">{item.title}</h4>
-                <p className="text-slate-400 text-[11px] uppercase font-normal">{item.desc}</p>
+                <h4 className="font-quantum text-sm tracking-widest font-bold">{item.title}</h4>
+                <p className="text-white/70 text-xs uppercase font-normal">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -191,9 +224,9 @@ export default function HomePage() {
             <span className="text-[var(--accent-gold)] font-bold text-[10px] tracking-[0.3em] uppercase mb-4 font-quantum">
               Direct Booking
             </span>
-            <h2 className="font-quantum text-3xl font-bold text-slate-900 mb-6">BOOK SERVICE</h2>
+            <h2 className="font-quantum text-3xl font-bold text-slate-900 mb-6">BOOK SERVICE NOW</h2>
             <p className="text-slate-500 mb-8 max-w-sm font-normal">
-              Schedule a technician immediately for your home repair needs.
+              Schedule a technician immediately for your home repair needs in Lower Mainland, BC. Available across Vancouver, Surrey, Burnaby, and surrounding areas.
             </p>
             <div className="flex items-center gap-4 text-slate-400 group-hover:text-[var(--primary-color)] transition-colors">
               <span className="material-symbols-outlined text-4xl">calendar_month</span>
@@ -209,7 +242,7 @@ export default function HomePage() {
             </span>
             <h2 className="font-quantum text-3xl font-bold mb-6">GET FREE QUOTE</h2>
             <p className="text-slate-400 mb-8 max-w-sm font-normal">
-              Receive a personalized estimate.{' '}
+              Receive a personalized estimate for your Lower Mainland home repair project.{' '}
               <span className="text-white font-bold italic underline underline-offset-4">
                 Upload photos
               </span>{' '}
@@ -229,10 +262,10 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div>
               <h2 className="font-quantum text-2xl font-bold mb-4 text-[var(--primary-color)]">
-                Lower Mainland Coverage
+                Lower Mainland BC Coverage
               </h2>
               <p className="text-slate-500 font-normal">
-                Strategic local hubs for rapid response times across the region.
+                Strategic local hubs for rapid response times across the Lower Mainland region. We proudly serve Vancouver, Surrey, Burnaby, Richmond, Coquitlam, and surrounding areas.
               </p>
             </div>
             <div className="h-px bg-slate-200 flex-1 hidden md:block mx-12 mb-4"></div>
@@ -256,9 +289,12 @@ export default function HomePage() {
       {/* Final CTA Section */}
       <section className="py-32 px-6 bg-slate-50">
         <div className="max-w-5xl mx-auto text-center">
-          <h2 className="font-quantum text-4xl md:text-5xl font-bold mb-12 text-[var(--primary-color)]">
-            Need help today?
+          <h2 className="font-quantum text-4xl md:text-5xl font-bold mb-6 text-[var(--primary-color)]">
+            Need Help Today in Lower Mainland BC?
           </h2>
+          <p className="text-xl text-slate-600 mb-12 max-w-2xl mx-auto">
+            Serving homeowners across Vancouver, Surrey, Burnaby, Richmond, Coquitlam, and all of Lower Mainland, British Columbia. Fast, reliable, and professional service you can trust.
+          </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <Link
               href="/book-service"

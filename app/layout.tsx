@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import JsonLd from "@/components/seo/JsonLd";
+import ConditionalHeader from "@/components/layout/ConditionalHeader";
+import ConditionalFooter from "@/components/layout/ConditionalFooter";
+import EnhancedSchema from "@/components/seo/EnhancedSchema";
+import TrackingScripts from "@/components/seo/TrackingScripts";
 
 export const metadata: Metadata = {
   title: "PlusPro Home | Professional Repair Services",
@@ -22,14 +24,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">
-        <JsonLd type="LocalBusiness" />
-        <Header />
-        <main>{children}</main>
-        <Footer />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <head>
+          <EnhancedSchema type="LocalBusiness" />
+        </head>
+        <body className="antialiased min-h-screen">
+          <TrackingScripts />
+          <ConditionalHeader />
+          <main className="pt-0 min-h-screen">{children}</main>
+          <ConditionalFooter />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
 

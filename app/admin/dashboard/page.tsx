@@ -1,130 +1,98 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Calendar, FileText, LogOut } from "lucide-react";
-import AdminLogout from "@/components/admin/AdminLogout";
+import { canViewAdmin, canEdit, getUserRole, getCurrentUser } from "@/lib/auth";
+import AdminDashboardClient from "@/components/admin/AdminDashboardClient";
 
 export default async function AdminDashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/admin/login");
+  const canView = await canViewAdmin();
+  
+  if (!canView) {
+    redirect("/");
   }
 
-  // Get counts
-  const { count: bookingsCount } = await supabase
+  const canEditData = await canEdit();
+  const role = await getUserRole();
+  const user = await getCurrentUser();
+  
+  // Extract only serializable data from user object
+  const userData = user ? {
+    id: user.id,
+    email: user.emailAddresses[0]?.emailAddress || '',
+    firstName: user.firstName || '',
+    lastName: user.lastName || '',
+  } : null;
+  
+  const supabase = await createClient();
+
+  // Fetch bookings and quotes
+  const { data: bookings, error: bookingsError } = await supabase
     .from("bookings")
-    .select("*", { count: "exact", head: true });
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  const { count: quotesCount } = await supabase
+  const { data: quotes, error: quotesError } = await supabase
     .from("quotes")
-    .select("*", { count: "exact", head: true });
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  const { count: newBookingsCount } = await supabase
-    .from("bookings")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "new");
+  // Debug: Log quotes data
+  if (quotesError) {
+    console.error("Quotes fetch error:", quotesError);
+  } else {
+    console.log("Quotes fetched:", quotes?.length || 0, "quotes");
+  }
 
-  const { count: newQuotesCount } = await supabase
-    .from("quotes")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "new");
+  // Fetch staff for active technicians count
+  const { data: staff } = await supabase
+    .from("staff")
+    .select("id")
+    .eq("is_active", true);
+
+  // Fetch all users - combine manual users, booking users, and quote users
+  const { data: manualUsers } = await supabase
+    .from("admin_users")
+    .select("email");
+
+  // Get unique users from bookings and quotes
+  const bookingEmails = new Set(bookings?.map((b) => b.email.toLowerCase()) || []);
+  const quoteEmails = new Set(quotes?.map((q) => q.email.toLowerCase()) || []);
+  const manualEmails = new Set(manualUsers?.map((u) => u.email.toLowerCase()) || []);
+  
+  // Combine all unique emails
+  const allUserEmails = new Set([
+    ...bookingEmails,
+    ...quoteEmails,
+    ...manualEmails,
+  ]);
+
+  // Calculate revenue from completed bookings
+  // You can add a price field to bookings table later for accurate revenue
+  const completedBookings = bookings?.filter((b) => b.status === "completed").length || 0;
+
+  if (bookingsError) {
+    console.error("Bookings error:", bookingsError);
+  }
+  if (quotesError) {
+    console.error("Quotes error:", quotesError);
+  }
+
+  // Calculate stats
+  const stats = {
+    totalBookings: bookings?.length || 0,
+    pendingQuotes: quotes?.filter((q) => q.status === "new" || q.status === "quoted").length || 0,
+    revenue: completedBookings * 500, // Placeholder - add price field to bookings for accurate revenue
+    activeTechnicians: staff?.length || 0,
+    totalUsers: allUserEmails.size, // Total unique users (registered + booking + quote)
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="border-b border-gray-200 bg-white">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-quantum text-primary">Admin Dashboard</h1>
-            <AdminLogout />
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Total Bookings</p>
-                  <p className="text-3xl font-semibold">{bookingsCount || 0}</p>
-                </div>
-                <Calendar className="w-8 h-8 text-primary" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">New Bookings</p>
-                  <p className="text-3xl font-semibold text-primary">{newBookingsCount || 0}</p>
-                </div>
-                <Calendar className="w-8 h-8 text-primary" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Total Quotes</p>
-                  <p className="text-3xl font-semibold">{quotesCount || 0}</p>
-                </div>
-                <FileText className="w-8 h-8 text-primary" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">New Quotes</p>
-                  <p className="text-3xl font-semibold text-primary">{newQuotesCount || 0}</p>
-                </div>
-                <FileText className="w-8 h-8 text-primary" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <Button asChild className="w-full" size="lg">
-                  <Link href="/admin/bookings">View All Bookings</Link>
-                </Button>
-                <Button asChild variant="outline" className="w-full" size="lg">
-                  <Link href="/admin/quotes">View All Quotes</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600">Recent bookings and quotes will appear here.</p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
+    <AdminDashboardClient
+      bookings={bookings || []}
+      quotes={quotes || []}
+      user={userData}
+      role={role}
+      canEdit={canEditData}
+      stats={stats}
+    />
   );
 }
-

@@ -1,15 +1,26 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Phone, Mail, MapPin } from "lucide-react";
-import { PHONE_NUMBER, EMAIL } from "@/lib/utils";
 import Link from "next/link";
+import { PHONE_NUMBER, EMAIL } from "@/lib/utils";
+import ContactForm from "@/components/ContactForm";
 
-export const metadata = {
-  title: "Contact Us | PlusPro Services | Lower Mainland BC",
-  description: "Contact PlusPro Services for handyman, plumbing, and repair services in Lower Mainland, BC. Call, email, or request a quote today.",
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact PlusPro Services | Call, Email or Request Quote | Lower Mainland BC",
+  description: "Contact PlusPro Services for handyman, plumbing & repair services in Vancouver, Surrey, Burnaby, Richmond, Coquitlam. Call (604) 555-0123 or request a free quote today.",
+  keywords: "contact handyman Lower Mainland, call plumber Vancouver, request quote Surrey, emergency repair Burnaby, home repair contact BC",
+  openGraph: {
+    title: "Contact PlusPro Services | Lower Mainland BC",
+    description: "Contact PlusPro Services for handyman, plumbing, and repair services in Lower Mainland, BC. Call, email, or request a quote today.",
+    type: "website",
+    locale: "en_CA",
+    url: "https://plusproservices.ca/contact",
+  },
+  alternates: {
+    canonical: "https://plusproservices.ca/contact",
+  },
 };
 
 export default function ContactPage() {
@@ -65,27 +76,7 @@ export default function ContactPage() {
             <Card>
               <CardContent className="pt-6">
                 <h2 className="text-2xl font-semibold mb-6">Send Us a Message</h2>
-                <form className="space-y-4">
-                  <div>
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" name="name" required />
-                  </div>
-                  <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" name="email" required />
-                  </div>
-                  <div>
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input id="phone" type="tel" name="phone" required />
-                  </div>
-                  <div>
-                    <Label htmlFor="message">Message</Label>
-                    <Textarea id="message" name="message" rows={5} required />
-                  </div>
-                  <Button type="submit" size="lg" className="w-full">
-                    Send Message
-                  </Button>
-                </form>
+                <ContactForm />
               </CardContent>
             </Card>
 

@@ -101,10 +101,10 @@ export default function Footer() {
               </div>
               <div className="flex items-start gap-3">
                 <span className="material-symbols-outlined text-sm mt-1">location_on</span>
-                <span>
-                  Vancouver, BC<br />
-                  Lower Mainland
-                </span>
+                <div itemScope itemType="https://schema.org/PostalAddress">
+                  <span itemProp="addressLocality">Vancouver</span>, <span itemProp="addressRegion">BC</span><br />
+                  <span itemProp="addressRegion">Lower Mainland</span>
+                </div>
               </div>
             </div>
           </div>

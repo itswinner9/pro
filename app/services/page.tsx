@@ -14,9 +14,22 @@ const iconMap: Record<string, any> = {
   'alert-circle': AlertCircle,
 };
 
-export const metadata = {
-  title: "Services | PlusPro Services | Handyman & Plumbing",
-  description: "Professional handyman, plumbing, drain cleaning, bathroom repairs, and tile installation services in Lower Mainland, BC.",
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Home Repair Services in Lower Mainland BC | PlusPro Services",
+  description: "Professional handyman, plumbing, drain cleaning, bathroom repairs & tile installation in Vancouver, Surrey, Burnaby, Richmond, Coquitlam. Licensed, insured, same-day service available.",
+  keywords: "handyman services Lower Mainland, plumbing Vancouver, drain cleaning Surrey, bathroom repairs Burnaby, tile installation Richmond, emergency repairs Coquitlam, home repair BC",
+  openGraph: {
+    title: "Home Repair Services in Lower Mainland BC | PlusPro Services",
+    description: "Professional handyman, plumbing, drain cleaning, bathroom repairs & tile installation in Lower Mainland, BC.",
+    type: "website",
+    locale: "en_CA",
+    url: "https://plusproservices.ca/services",
+  },
+  alternates: {
+    canonical: "https://plusproservices.ca/services",
+  },
 };
 
 export default function ServicesPage() {
@@ -25,7 +38,7 @@ export default function ServicesPage() {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-quantum text-primary mb-6">
-            Our Services
+            Professional Home Repair Services in Lower Mainland BC
           </h1>
           <p className="text-xl text-dark/80">
             Professional, reliable, and affordable services for all your home repair and maintenance needs.

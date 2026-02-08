@@ -7,9 +7,9 @@ import { Phone, MapPin } from "lucide-react";
 import { PHONE_NUMBER } from "@/lib/utils";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateStaticParams() {
@@ -19,7 +19,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps) {
-  const location = LOCATIONS.find((l) => l.slug === params.slug);
+  const { slug } = await params;
+  const location = LOCATIONS.find((l) => l.slug === slug);
   
   if (!location) {
     return {
@@ -27,14 +28,28 @@ export async function generateMetadata({ params }: PageProps) {
     };
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plusproservices.ca";
+  
   return {
     title: `Handyman & Plumbing Services in ${location.name}, BC | PlusPro Services`,
-    description: `Professional handyman, plumbing, drain cleaning, and repair services in ${location.name}, British Columbia. Fast, reliable, and insured.`,
+    description: `Professional handyman, plumbing, drain cleaning & repair services in ${location.name}, BC. Licensed, insured, same-day service. Serving ${location.name} and surrounding areas.`,
+    keywords: `handyman ${location.name}, plumbing ${location.name}, drain cleaning ${location.name}, home repair ${location.name} BC, emergency repairs ${location.name}`,
+    openGraph: {
+      title: `Handyman & Plumbing Services in ${location.name}, BC | PlusPro Services`,
+      description: `Professional handyman, plumbing, drain cleaning, and repair services in ${location.name}, British Columbia.`,
+      type: "website",
+      locale: "en_CA",
+      url: `${baseUrl}/locations/${location.slug}`,
+    },
+    alternates: {
+      canonical: `${baseUrl}/locations/${location.slug}`,
+    },
   };
 }
 
-export default function LocationPage({ params }: PageProps) {
-  const location = LOCATIONS.find((l) => l.slug === params.slug);
+export default async function LocationPage({ params }: PageProps) {
+  const { slug } = await params;
+  const location = LOCATIONS.find((l) => l.slug === slug);
 
   if (!location) {
     notFound();
