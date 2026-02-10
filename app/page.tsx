@@ -42,20 +42,17 @@ export default function HomePage() {
       >
         <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 overflow-hidden">
           <div className="max-w-6xl mx-auto text-center relative z-10">
-          <span className="font-quantum text-[10px] tracking-[0.5em] text-[var(--accent-gold)] mb-8 block font-bold">
-            The Gold Standard in Home Repair | Lower Mainland BC
+          <span className="font-quantum text-[10px] tracking-[0.5em] text-[var(--accent-gold)] mb-6 block font-bold">
+            Lower Mainland BC
           </span>
-          <h1 className="font-quantum text-4xl md:text-7xl font-bold leading-[1.2] text-slate-900 mb-8">
-            Professional <br className="hidden md:block" /> Home Repair in <br className="hidden md:block" />
+          <h1 className="font-quantum text-4xl md:text-6xl font-bold leading-tight text-slate-900 mb-6">
+            Professional Home Repair in{" "}
             <span className="text-[var(--primary-color)]">
               <RotatingCityText />
             </span>
           </h1>
-          <p className="max-w-2xl mx-auto text-lg md:text-xl text-slate-500 font-medium mb-4 leading-relaxed">
-            Trusted by homeowners across Lower Mainland, BC. Fast, reliable, and affordable service for your home. Experience premium craftsmanship tailored to your local needs.
-          </p>
-          <p className="max-w-2xl mx-auto text-base text-slate-400 mb-12">
-            Serving Vancouver, Surrey, Burnaby, Richmond, Coquitlam, and all of Lower Mainland, British Columbia
+          <p className="max-w-xl mx-auto text-lg text-slate-500 mb-10">
+            Fast, reliable, and affordable. Get a free quote today.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <Link

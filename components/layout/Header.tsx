@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { PHONE_NUMBER } from "@/lib/utils";
@@ -44,25 +45,15 @@ export default function Header() {
             id="main-nav"
           >
             <div className="flex-shrink-0">
-              <Link href="/" className="flex items-center">
-                <img 
-                  src="/logo.png" 
-                  alt="PlusPro Services" 
+              <Link href="/" className="flex items-center h-10">
+                <Image
+                  src="/logo.png"
+                  alt="PlusPro Services"
+                  width={200}
+                  height={40}
                   className="h-10 w-auto object-contain max-w-[200px]"
-                  onError={(e) => {
-                    // Fallback to text if logo doesn't exist
-                    e.currentTarget.style.display = 'none';
-                    if (!e.currentTarget.nextElementSibling) {
-                      const textLogo = document.createElement('span');
-                      textLogo.className = 'font-quantum text-2xl font-bold text-[var(--primary-color)]';
-                      textLogo.textContent = 'PlusPro';
-                      e.currentTarget.parentElement?.appendChild(textLogo);
-                    }
-                  }}
+                  priority
                 />
-                <span className="font-quantum text-2xl font-bold text-[var(--primary-color)] hidden" style={{display: 'none'}}>
-                  PlusPro
-                </span>
               </Link>
             </div>
 

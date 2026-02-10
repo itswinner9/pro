@@ -1,11 +1,24 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Montserrat, Syncopate } from "next/font/google";
 import "./globals.css";
 import ConditionalHeader from "@/components/layout/ConditionalHeader";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import EnhancedSchema from "@/components/seo/EnhancedSchema";
 import TrackingScripts from "@/components/seo/TrackingScripts";
 import { ClerkSetupMessage } from "@/components/ClerkSetupMessage";
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-montserrat",
+});
+const syncopate = Syncopate({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-syncopate",
+});
 
 export const metadata: Metadata = {
   title: "PlusPro Home | Professional Repair Services",
@@ -26,10 +39,12 @@ export default function RootLayout({
 }>) {
   const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim();
 
+  const fontClass = `${montserrat.variable} ${syncopate.variable} ${montserrat.className} antialiased min-h-screen`;
+
   if (!clerkPublishableKey) {
     return (
       <html lang="en">
-        <body className="antialiased min-h-screen">
+        <body className={fontClass}>
           <ClerkSetupMessage />
         </body>
       </html>
@@ -42,7 +57,7 @@ export default function RootLayout({
         <head>
           <EnhancedSchema type="LocalBusiness" />
         </head>
-        <body className="antialiased min-h-screen">
+        <body className={fontClass}>
           <TrackingScripts />
           <ConditionalHeader />
           <main className="pt-0 min-h-screen">{children}</main>

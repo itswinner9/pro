@@ -8,6 +8,9 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
 }
 
 const { initOpenNextCloudflareForDev } = require('@opennextjs/cloudflare')

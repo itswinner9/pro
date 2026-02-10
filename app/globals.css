@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Syncopate:wght@400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -13,12 +12,11 @@
 
 @layer base {
   body {
-    font-family: 'Montserrat', sans-serif;
     background-color: var(--bg-off-white);
     color: #1a1a1a;
   }
   .font-quantum {
-    font-family: 'Syncopate', sans-serif;
+    font-family: var(--font-syncopate), sans-serif;
     letter-spacing: 0.05em;
     text-transform: uppercase;
   }
@@ -106,27 +104,8 @@ html {
   scroll-padding-top: 80px;
 }
 
-/* Section transitions */
 section {
   scroll-margin-top: 80px;
-}
-
-/* Active section highlighting */
-section[id] {
-  position: relative;
-}
-
-section[id]:target {
-  animation: highlightSection 1s ease-out;
-}
-
-@keyframes highlightSection {
-  0% {
-    background-color: rgba(10, 26, 114, 0.05);
-  }
-  100% {
-    background-color: transparent;
-  }
 }
 
 @layer utilities {
