@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "echo 'Build output ready; Cloudflare Pages deploys automatically.'"
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.7.5",
@@ -19,10 +20,10 @@
     "clsx": "^2.1.0",
     "date-fns": "^3.3.0",
     "lucide-react": "^0.344.0",
-    "next": "^14.2.0",
+    "next": "^16.1.6",
     "quill": "^2.0.3",
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "react-hook-form": "^7.50.0",
     "react-quill": "^2.0.0",
     "resend": "^3.5.0",
@@ -30,15 +31,17 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.16.3",
     "@types/node": "^20.11.0",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.56.0",
-    "eslint-config-next": "^14.2.0",
+    "eslint-config-next": "^16.1.6",
     "postcss": "^8.4.33",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "wrangler": "^4.63.0"
   }
 }

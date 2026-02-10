@@ -1,6 +1,7 @@
 /**
  * Shared Resend email helper.
- * Uses RESEND_API_KEY and a valid "from" address.
+ * RESEND_API_KEY is optional: when missing, emails are logged to console and the app still returns success.
+ * Uses RESEND_API_KEY and a valid "from" address when set.
  * Default from: onboarding@resend.dev (works without domain verification).
  * Set FROM_EMAIL in env for a custom sender (e.g. noreply@yourdomain.com).
  */

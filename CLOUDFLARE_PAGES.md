@@ -1,25 +1,61 @@
-# Cloudflare Pages – Deploy Settings
+# Cloudflare settings for Next.js (OpenNext)
 
-## Fix: "Missing entry-point to Worker script"
+This project uses **Next.js 16** with **@opennextjs/cloudflare**. Deploy to **Cloudflare Workers** (not Pages) so the full app (including API routes) runs.
 
-If your build succeeds but deploy fails with Wrangler/Worker errors:
+---
 
-1. Go to **Cloudflare Dashboard** → **Workers & Pages** → your project.
-2. Open **Settings** → **Builds & deployments**.
-3. **Change "Deploy command"** to: `npm run deploy`  
-   (Or leave it **empty** — Cloudflare Pages will deploy the build output automatically.)
-4. Keep:
-   - **Build command:** `npm run build`
-   - **Build output directory:** `.next` (or whatever your framework preset uses)
+## Option A: Deploy from your machine (CLI)
 
-**Important:** Do **not** use `npx wrangler deploy` as the Deploy command — that deploys a Worker and you’ll only see “OK”. Use **empty** or **`npm run deploy`** so Pages serves your Next.js app.
+1. Install dependencies: `npm install`
+2. Log in to Cloudflare: `npx wrangler login`
+3. Deploy: `npm run deploy`
+4. In **Cloudflare Dashboard** → **Workers & Pages** → your Worker (**pluspro**) → **Settings** → **Domains** → add **pluspro.ca** and **www.pluspro.ca**
 
-## Environment variables
+---
 
-Add these in **Settings** → **Environment variables** (for both Production and Preview if needed):
+## Option B: Cloudflare dashboard (Git + Workers)
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- Any other vars from your `.env.local` (Clerk, Resend, etc.)
+1. Go to **https://dash.cloudflare.com** → **Workers & Pages**.
+2. Click **Create** → **Worker** (or **Create application** → **Worker**).
+3. Choose **Connect to Git** and connect **itswinner9/pro**.
+4. **Build settings:**
+   - **Build command:** `npm run deploy`
+   - **Build output directory:** leave empty (OpenNext deploys the Worker; no static output dir).
+   - **Root directory:** leave as `/` (project root).
+5. **Environment variables** (Settings → Variables and Secrets): add for **Production** (and Preview if needed):
+   - **Required:** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`
+   - **Optional:** `RESEND_API_KEY` (emails; if missing, forms still succeed and emails are logged to console), `ADMIN_EMAIL`, `FROM_EMAIL`, `NEXT_PUBLIC_SITE_URL`
+6. Save and deploy. Your app will be at the Worker URL (e.g. `pluspro.<your-subdomain>.workers.dev`).
+7. **Custom domain:** In the Worker → **Settings** → **Domains & routes** (or **Triggers** → **Custom Domains**) → add **pluspro.ca** and **www.pluspro.ca**.
 
-The sitemap will include blog URLs when these are set at build time.
+---
+
+## If you use Cloudflare **Pages** (not Workers)
+
+Pages is for **static** sites. This app is **Next.js with API routes**, so:
+
+- **Either** use **Workers** (Option A or B above) with OpenNext — recommended.
+- **Or** use **Vercel** for this repo (no Cloudflare config; Vercel runs Next.js as-is).
+
+Do **not** set **Build output directory** to `.next` on Pages — that will give 404. This app must be deployed as a Worker via OpenNext.
+
+---
+
+## Summary: Cloudflare Next.js settings
+
+| Setting              | Value                    |
+|----------------------|--------------------------|
+| **Product**          | Workers (not Pages)      |
+| **Build command**    | `npm run deploy`         |
+| **Build output dir** | (leave empty)            |
+| **Env vars**         | Supabase, Clerk required; Resend optional (see list above) |
+| **Custom domain**    | Add pluspro.ca in Worker → Domains       |
+
+---
+
+## Scripts (package.json)
+
+- `npm run dev` — local Next.js dev server.
+- `npm run build` — Next.js build only.
+- `npm run preview` — OpenNext build + local Workers preview.
+- `npm run deploy` — OpenNext build + deploy to Cloudflare Workers.

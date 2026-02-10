@@ -9,8 +9,9 @@ const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   swcMinify: true,
-  // optimizeCss requires 'critters' and can break static page generation
-  // experimental: { optimizeCss: true },
 }
+
+const { initOpenNextCloudflareForDev } = require('@opennextjs/cloudflare')
+initOpenNextCloudflareForDev()
 
 module.exports = nextConfig

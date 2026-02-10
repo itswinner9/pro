@@ -5,6 +5,7 @@ import ConditionalHeader from "@/components/layout/ConditionalHeader";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import EnhancedSchema from "@/components/seo/EnhancedSchema";
 import TrackingScripts from "@/components/seo/TrackingScripts";
+import { ClerkSetupMessage } from "@/components/ClerkSetupMessage";
 
 export const metadata: Metadata = {
   title: "PlusPro Home | Professional Repair Services",
@@ -23,8 +24,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim();
+
+  if (!clerkPublishableKey) {
+    return (
+      <html lang="en">
+        <body className="antialiased min-h-screen">
+          <ClerkSetupMessage />
+        </body>
+      </html>
+    );
+  }
+
   return (
-    <ClerkProvider>
+    <ClerkProvider publishableKey={clerkPublishableKey}>
       <html lang="en">
         <head>
           <EnhancedSchema type="LocalBusiness" />

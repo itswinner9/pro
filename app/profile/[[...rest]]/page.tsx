@@ -8,9 +8,7 @@ import { SERVICES } from "@/lib/types";
 import Link from "next/link";
 
 interface ProfilePageProps {
-  params: {
-    rest?: string[];
-  };
+  params: Promise<{ rest?: string[] }>;
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
@@ -20,9 +18,10 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     redirect("/sign-in");
   }
 
-  // If there are sub-routes (like /profile/account, /profile/security), 
+  const { rest } = await params;
+  // If there are sub-routes (like /profile/account, /profile/security),
   // let Clerk's UserProfile handle them
-  const isSubRoute = params?.rest && params.rest.length > 0;
+  const isSubRoute = rest && rest.length > 0;
 
   // If it's a sub-route, just show Clerk's UserProfile
   if (isSubRoute) {
