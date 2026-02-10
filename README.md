@@ -4,12 +4,18 @@ A modern, minimalist, high-conversion website and admin dashboard for PlusPro Se
 
 ## Tech Stack
 
-- Next.js 14 (App Router)
-- React + TypeScript
+- Next.js 16 (App Router)
+- React 19 + TypeScript
 - Tailwind CSS
 - shadcn/ui
 - Supabase (Database, Auth, Storage)
-- Netlify (Hosting + Functions)
+- Clerk (Auth)
+- Resend (Email, optional)
+- Netlify (Hosting)
+
+## Requirements
+
+- **Node.js** >= 20.9.0 (see `.nvmrc` or `package.json` engines)
 
 ## Getting Started
 
@@ -23,10 +29,14 @@ npm install
 cp .env.example .env.local
 ```
 
-Add your Supabase credentials:
-- NEXT_PUBLIC_SUPABASE_URL
-- NEXT_PUBLIC_SUPABASE_ANON_KEY
-- SUPABASE_SERVICE_ROLE_KEY
+**Required:** Supabase + Clerk  
+- NEXT_PUBLIC_SUPABASE_URL  
+- NEXT_PUBLIC_SUPABASE_ANON_KEY  
+- NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY  
+- CLERK_SECRET_KEY  
+
+**Optional:** Resend (emails; if missing, forms still succeed and emails are logged)  
+- RESEND_API_KEY  
 
 3. Run the development server:
 ```bash
@@ -34,6 +44,13 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to see the website.
+
+## Deploy to Netlify
+
+- Repo is configured for Netlify: `netlify.toml` (Node 20, build command, publish dir).
+- Add env vars in Netlify: **Site settings** → **Environment variables** (Supabase, Clerk, optional Resend).
+- Netlify uses Node 20 via `NODE_VERSION` in `netlify.toml` and `.nvmrc`.
+- Push to `main` or trigger a deploy to build and publish.
 
 ## Project Structure
 
