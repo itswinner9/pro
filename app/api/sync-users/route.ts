@@ -12,7 +12,7 @@ export async function POST() {
     }
 
     const supabase = await createClient();
-    const clerk = clerkClient();
+    const clerk = await clerkClient();
 
     // Get all users from Clerk
     const clerkUsers = await clerk.users.getUserList({ limit: 500 });
