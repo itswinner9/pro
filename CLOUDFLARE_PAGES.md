@@ -47,7 +47,8 @@ This project uses **Next.js 16** with **@opennextjs/cloudflare**. You must use *
 
 **Error: "The entry-point file at .open-next/worker.js was not found"**
 
-- Your **Build command** is set to `npm run build` (or `next build`). Change it to **`npx opennextjs-cloudflare build`**. Only OpenNext produces `.open-next/worker.js`; a plain Next.js build does not.
+- **Fix in repo:** `wrangler.jsonc` has a `build.command` that runs `npx opennextjs-cloudflare build`. When you run **Deploy command** `npx wrangler deploy`, wrangler runs that build first, then deploys. So even if the dashboard Build command runs `npm run build` (Next.js only), the deploy step will create `.open-next/worker.js`.
+- Optional: set the dashboard **Build command** to `npx opennextjs-cloudflare build` so the build step produces the Worker output (and deploy is faster).
 
 ---
 
