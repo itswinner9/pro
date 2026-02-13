@@ -45,6 +45,11 @@ This project uses **Next.js 16** with **@opennextjs/cloudflare**. You must use *
 
 ## Troubleshooting
 
+**Error: write EPIPE / Command "npm run build" exited with 1**
+
+- **Fix in repo:** `next.config.js` only runs OpenNext dev init in development, so it no longer runs during build (which could cause EPIPE).
+- If it still happens: clear build cache in Cloudflare and retry; EPIPE is often intermittent or due to memory limits. In Workers Builds, ensure Node 20+ is used.
+
 **Error: "The entry-point file at .open-next/worker.js was not found"**
 
 - **Fix in repo:** `wrangler.jsonc` has a `build.command` that runs `npx opennextjs-cloudflare build`. When you run **Deploy command** `npx wrangler deploy`, wrangler runs that build first, then deploys. So even if the dashboard Build command runs `npm run build` (Next.js only), the deploy step will create `.open-next/worker.js`.

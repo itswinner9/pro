@@ -13,7 +13,14 @@ const nextConfig = {
   },
 }
 
-const { initOpenNextCloudflareForDev } = require('@opennextjs/cloudflare')
-initOpenNextCloudflareForDev()
+// Only run OpenNext dev init when in development (avoids EPIPE / broken pipe during build in CI)
+const isDev = process.env.NODE_ENV === 'development'
+if (isDev) {
+  try {
+    require('@opennextjs/cloudflare').initOpenNextCloudflareForDev()
+  } catch (_) {
+    // ignore if OpenNext not available or fails
+  }
+}
 
 module.exports = nextConfig
