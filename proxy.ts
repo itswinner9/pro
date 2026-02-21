@@ -1,11 +1,13 @@
 /**
  * Next.js 16 uses proxy.ts (not middleware.ts).
- * Do NOT call auth() or currentUser() here — they are App Router only and cause
- * "Request constructor: init.headers is a symbol". Admin protection is in app/admin/layout.tsx.
+ * Frontend-only site: no auth middleware (Clerk removed).
  */
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default clerkMiddleware();
+export function middleware(_request: NextRequest) {
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
