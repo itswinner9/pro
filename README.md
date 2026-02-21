@@ -45,6 +45,11 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to see the website.
 
+## Deploy to Vercel
+
+- **Build:** Use default `npm run build`. The build script runs **next build** on Vercel (detects `VERCEL` env) and **OpenNext for Cloudflare** elsewhere.
+- Add env vars in Vercel → Project → Settings → Environment Variables (Supabase + Clerk required).
+
 ## Deploy to Netlify
 
 - Repo is configured for Netlify: `netlify.toml` (Node 20, build command, publish dir).

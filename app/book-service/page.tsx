@@ -4,17 +4,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SERVICES, ServiceType } from "@/lib/types";
-import { createClient } from "@/lib/supabase/client";
-import { Upload, X, CheckCircle, Calendar, Clock, MapPin } from "lucide-react";
-import { FormLoading, ButtonLoading, LoadingSpinner } from "@/components/ui/loading";
+import { SERVICES } from "@/lib/types";
+import { CheckCircle } from "lucide-react";
+import { FormLoading, ButtonLoading } from "@/components/ui/loading";
 import Link from "next/link";
 import { PHONE_NUMBER } from "@/lib/utils";
 
@@ -38,9 +35,9 @@ const bookingSchema = z.object({
 
 type BookingFormData = z.infer<typeof bookingSchema>;
 
+const WEB3FORMS_ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || process.env.NEXT_PUBLIC_WEB3FORMS_BOOKING_ACCESS_KEY || "4f37a44a-85db-42de-a4b0-43d603871105";
+
 export default function BookServicePage() {
-  const [images, setImages] = useState<File[]>([]);
-  const [uploading, setUploading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,101 +50,38 @@ export default function BookServicePage() {
     resolver: zodResolver(bookingSchema),
   });
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    const newImages = files.slice(0, 5 - images.length);
-    setImages((prev) => [...prev, ...newImages]);
-  };
-
-  const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const uploadImages = async (files: File[]): Promise<string[]> => {
-    if (files.length === 0) return [];
-
-    const supabase = createClient();
-    const uploadedUrls: string[] = [];
-
-    for (const file of files) {
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}-${file.name}`;
-      const { data, error } = await supabase.storage
-        .from("booking-images")
-        .upload(fileName, file);
-
-      if (error) {
-        throw new Error(`Failed to upload ${file.name}: ${error.message}`);
-      }
-
-      const { data: urlData } = supabase.storage
-        .from("booking-images")
-        .getPublicUrl(fileName);
-
-      if (urlData?.publicUrl) {
-        uploadedUrls.push(urlData.publicUrl);
-      }
-    }
-
-    return uploadedUrls;
-  };
-
   const onSubmit = async (data: BookingFormData) => {
     try {
-      setUploading(true);
       setError(null);
 
-      // Upload images first
-      const imageUrls = await uploadImages(images);
-
-      // Save to database
-      const supabase = createClient();
-      const { data: insertedData, error: dbError } = await supabase
-        .from("bookings")
-        .insert({
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
           name: data.name,
-          phone: data.phone,
           email: data.email,
+          phone: data.phone,
           address: data.address,
-          service: data.service,
+          service: SERVICES.find((s) => s.id === data.service)?.title || data.service,
           date: data.date,
           time: data.time,
-          message: data.message || null,
-          images: imageUrls,
-          status: "new",
-        })
-        .select()
-        .single();
+          message: data.message || "",
+          from_name: "PlusPro Booking Request",
+        }),
+      });
 
-      if (dbError) {
-        console.error("Database error:", dbError);
-        throw new Error(`Failed to save booking: ${dbError.message}`);
+      const result = await res.json();
+
+      if (!result.success) {
+        throw new Error(result.message || "Failed to submit booking.");
       }
 
-      if (!insertedData) {
-        throw new Error("Failed to save booking. Please try again.");
-      }
-
-      // Trigger email notification (non-blocking)
-      try {
-        await fetch("/api/notify-booking", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data, images: imageUrls }),
-        });
-      } catch (notifyError) {
-        // Don't fail the booking if notification fails
-        console.warn("Notification failed:", notifyError);
-      }
-
-      // Only show success if data was actually saved
       setSubmitted(true);
       reset();
-      setImages([]);
     } catch (err) {
       console.error("Booking submission error:", err);
       setError(err instanceof Error ? err.message : "Failed to submit booking. Please try again.");
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -169,8 +103,8 @@ export default function BookServicePage() {
               Booking Submitted!
             </h1>
             <p className="text-slate-600 mb-8 max-w-md mx-auto text-base sm:text-lg leading-relaxed">
-              Thank you for booking with PlusPro Services! We&apos;ve received your request and will contact you shortly to confirm your appointment. 
-              Your booking has been saved and is now visible in the admin dashboard.
+              Thank you for booking with PlusPro Services! We&apos;ve received your request and will contact you shortly to confirm your appointment.
+              You can text photos to us at {PHONE_NUMBER} if needed.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -240,7 +174,7 @@ export default function BookServicePage() {
             </div>
           </div>
 
-          {(isSubmitting || uploading) && <FormLoading message={uploading ? "Uploading images..." : "Submitting booking..."} />}
+          {isSubmitting && <FormLoading message="Submitting booking..." />}
 
           <div className="luxury-card bg-white p-8 md:p-12 rounded-[24px] shadow-sm border border-slate-100">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -375,55 +309,6 @@ export default function BookServicePage() {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="images" className="text-xs font-bold tracking-widest uppercase text-slate-700">
-                  Upload Photos (Optional, max 5)
-                </Label>
-                <div className="mt-2">
-                  <input
-                    type="file"
-                    id="images"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageChange}
-                    disabled={images.length >= 5}
-                    className="hidden"
-                  />
-                  <label htmlFor="images">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      disabled={images.length >= 5}
-                      className="border-slate-200 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Upload className="w-4 h-4 mr-2" />
-                      {images.length >= 5 ? "Maximum 5 images" : `Choose Images (${images.length}/5)`}
-                    </Button>
-                  </label>
-                  {images.length > 0 && (
-                    <div className="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {images.map((image, index) => (
-                        <div key={index} className="relative group">
-                          <img
-                            src={URL.createObjectURL(image)}
-                            alt={`Upload ${index + 1}`}
-                            className="w-full h-32 object-cover rounded-xl border border-slate-200"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeImage(index)}
-                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors shadow-lg"
-                            title="Remove image"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl">
                   {error}
@@ -431,10 +316,10 @@ export default function BookServicePage() {
               )}
 
               <ButtonLoading
-                loading={isSubmitting || uploading}
+                loading={isSubmitting}
                 className="w-full bg-[var(--primary-color)] text-white rounded-xl h-14 font-bold tracking-widest text-xs uppercase hover:bg-[var(--primary-color)]/90 transition-all hover:shadow-lg"
               >
-                {uploading ? "Uploading..." : isSubmitting ? "Submitting..." : "Book Service"}
+                {isSubmitting ? "Submitting..." : "Book Service"}
               </ButtonLoading>
             </form>
           </div>

@@ -21,6 +21,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://plusproservices.ca/contact",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact PlusPro Services | Lower Mainland BC",
+    description: "Contact PlusPro Services for handyman, plumbing, and repair services in Lower Mainland, BC. Call, email, or request a quote today.",
+    images: ["https://plusproservices.ca/og.png"],
+  },
 };
 
 export default function ContactPage() {

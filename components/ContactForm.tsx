@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CheckCircle, AlertCircle } from "lucide-react";
+
+const WEB3FORMS_ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || "4f37a44a-85db-42de-a4b0-43d603871105";
 
 export default function ContactForm() {
   const [loading, setLoading] = useState(false);
@@ -27,14 +28,13 @@ export default function ContactForm() {
     setSuccess(false);
 
     try {
-      // Submit to Web3Forms (primary method)
       const web3formsResponse = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          access_key: "4f37a44a-85db-42de-a4b0-43d603871105",
+          access_key: WEB3FORMS_ACCESS_KEY,
           name: formData.name,
           email: formData.email,
           phone: formData.phone || "",
@@ -47,35 +47,7 @@ export default function ContactForm() {
       const web3formsResult = await web3formsResponse.json();
 
       if (!web3formsResult.success) {
-        console.warn("Web3Forms submission failed:", web3formsResult);
-      }
-
-      // Also save to Supabase database (backup/local storage)
-      const supabase = createClient();
-      const { error: insertError } = await supabase.from("messages").insert({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone || null,
-        subject: formData.subject || null,
-        message: formData.message,
-        read: false,
-      });
-
-      if (insertError) {
-        console.warn("Database save failed:", insertError);
-        // Don't fail if database save fails, Web3Forms already succeeded
-      }
-
-      // Trigger email notification (non-blocking)
-      try {
-        await fetch("/api/notify-contact", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
-      } catch (notifyError) {
-        // Don't fail the form submission if notification fails
-        console.warn("Notification failed:", notifyError);
+        throw new Error(web3formsResult.message || "Failed to send message. Please try again.");
       }
 
       setSuccess(true);
@@ -87,11 +59,10 @@ export default function ContactForm() {
         message: "",
       });
 
-      // Reset success message after 5 seconds
       setTimeout(() => setSuccess(false), 5000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error submitting message:", err);
-      setError(err.message || "Failed to send message. Please try again.");
+      setError(err instanceof Error ? err.message : "Failed to send message. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -172,4 +143,3 @@ export default function ContactForm() {
     </form>
   );
 }
-

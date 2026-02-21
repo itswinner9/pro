@@ -6,35 +6,6 @@ export type ServiceType =
   | 'handyman-services'
   | 'emergency-repairs';
 
-export interface Booking {
-  id: string;
-  name: string;
-  phone: string;
-  email: string;
-  address: string;
-  service: ServiceType;
-  date: string;
-  time: string;
-  message?: string;
-  images: string[];
-  status: 'new' | 'contacted' | 'scheduled' | 'completed' | 'cancelled';
-  created_at: string;
-  notes?: string;
-}
-
-export interface Quote {
-  id: string;
-  name: string;
-  phone: string;
-  email: string;
-  service: ServiceType;
-  message?: string;
-  images: string[];
-  status: 'new' | 'contacted' | 'quoted' | 'completed' | 'cancelled';
-  created_at: string;
-  notes?: string;
-}
-
 export interface Service {
   id: ServiceType;
   title: string;

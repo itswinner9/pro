@@ -21,6 +21,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://plusproservices.ca/about",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "About PlusPro Services | Trusted Home Repair Experts in Lower Mainland BC",
+    description: "Experienced home repair professionals serving Lower Mainland, BC with quality craftsmanship and exceptional service.",
+    images: ["https://plusproservices.ca/og.png"],
+  },
 };
 
 export default function AboutPage() {

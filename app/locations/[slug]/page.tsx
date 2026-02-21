@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SERVICES, LOCATIONS } from "@/lib/types";
 import { Phone, MapPin } from "lucide-react";
 import { PHONE_NUMBER } from "@/lib/utils";
+import EnhancedSchema from "@/components/seo/EnhancedSchema";
 
 interface PageProps {
   params: Promise<{
@@ -44,6 +45,12 @@ export async function generateMetadata({ params }: PageProps) {
     alternates: {
       canonical: `${baseUrl}/locations/${location.slug}`,
     },
+    twitter: {
+      card: "summary_large_image",
+      title: `Handyman & Plumbing Services in ${location.name}, BC | PlusPro Services`,
+      description: `Professional handyman, plumbing, drain cleaning, and repair services in ${location.name}, British Columbia.`,
+      images: [`${baseUrl}/og.png`],
+    },
   };
 }
 
@@ -55,7 +62,32 @@ export default async function LocationPage({ params }: PageProps) {
     notFound();
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plusproservices.ca";
+  const placeSchema = {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    name: `PlusPro Services - ${location.name}`,
+    description: `Professional handyman, plumbing, drain cleaning, and repair services in ${location.name}, British Columbia.`,
+    url: `${baseUrl}/locations/${location.slug}`,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: location.name,
+      addressRegion: "BC",
+      addressCountry: "CA",
+    },
+    areaServed: {
+      "@type": "City",
+      name: location.name,
+    },
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(placeSchema) }}
+      />
+      <EnhancedSchema type="BreadcrumbList" breadcrumbs={[{ name: "Home", url: "/" }, { name: "Our Areas", url: "/#areas" }, { name: location.name, url: `/locations/${location.slug}` }]} />
     <div className="py-16 bg-background min-h-screen">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
@@ -135,6 +167,7 @@ export default async function LocationPage({ params }: PageProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

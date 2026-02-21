@@ -1,7 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
+import { getPublishedBlogPosts } from "@/lib/blog-posts";
 import Link from "next/link";
 import { Metadata } from "next";
-import { Calendar, Eye, ArrowRight, Clock } from "lucide-react";
+import { Calendar, Eye, ArrowRight } from "lucide-react";
 import Image from "next/image";
 
 export const metadata: Metadata = {
@@ -17,20 +17,16 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://plusproservices.ca/blog",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog | PlusPro Services - Home Repair Tips for Lower Mainland BC",
+    description: "Expert home repair tips, plumbing advice, and maintenance guides for Lower Mainland BC homeowners.",
+    images: ["https://plusproservices.ca/og.png"],
+  },
 };
 
-export default async function BlogPage() {
-  const supabase = await createClient();
-
-  const { data: blogs, error } = await supabase
-    .from("blogs")
-    .select("id, title, slug, excerpt, featured_image, author, category, published_at, views, created_at")
-    .eq("is_published", true)
-    .order("published_at", { ascending: false });
-
-  if (error) {
-    console.error("Error loading blogs:", error);
-  }
+export default function BlogPage() {
+  const blogs = getPublishedBlogPosts();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
@@ -47,11 +43,11 @@ export default async function BlogPage() {
       </div>
 
       <div className="container mx-auto px-6 py-16">
-        {blogs && blogs.length > 0 ? (
+        {blogs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {blogs.map((blog) => {
-              const publishedDate = blog.published_at 
-                ? new Date(blog.published_at) 
+              const publishedDate = blog.published_at
+                ? new Date(blog.published_at)
                 : new Date(blog.created_at);
               const timeAgo = getTimeAgo(publishedDate);
 
@@ -80,7 +76,7 @@ export default async function BlogPage() {
                       )}
                     </div>
                   ) : (
-                    <div className="aspect-video bg-gradient-to-br from-[var(--primary-color)] to-blue-700 flex items-center justify-center">
+                    <div className="aspect-video bg-gradient-to-br from-[var(--primary-color)] to-blue-700 flex items-center justify-center relative">
                       {blog.category && (
                         <div className="absolute top-4 left-4">
                           <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-sm">
@@ -97,7 +93,7 @@ export default async function BlogPage() {
                     <h2 className="font-semibold text-xl text-slate-900 mb-3 group-hover:text-[var(--primary-color)] transition-colors line-clamp-2">
                       {blog.title}
                     </h2>
-                    
+
                     {blog.excerpt && (
                       <p className="text-slate-600 mb-4 line-clamp-3 text-sm leading-relaxed flex-1">
                         {blog.excerpt}
@@ -119,7 +115,7 @@ export default async function BlogPage() {
                       </div>
                       <div className="flex items-center gap-1">
                         <Eye className="w-3 h-3" />
-                        <span>{blog.views || 0}</span>
+                        <span>{blog.views ?? 0}</span>
                       </div>
                     </div>
 
@@ -156,5 +152,5 @@ function getTimeAgo(date: Date): string {
   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
   if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
   if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 604800)}w ago`;
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }

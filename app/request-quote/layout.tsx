@@ -14,6 +14,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://plusproservices.ca/request-quote",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Request Free Quote | PlusPro Services | Lower Mainland BC",
+    description: "Get a free quote for professional home repair services in Lower Mainland, BC. Fast, accurate estimates.",
+    images: ["https://plusproservices.ca/og.png"],
+  },
 };
 
 export default function RequestQuoteLayout({

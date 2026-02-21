@@ -1,9 +1,11 @@
+import React from "react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SERVICES } from "@/lib/types";
 import { Phone, Droplets, Wrench, Bath, Square, Hammer, AlertCircle } from "lucide-react";
 import { PHONE_NUMBER } from "@/lib/utils";
+import EnhancedSchema from "@/components/seo/EnhancedSchema";
 
 const iconMap: Record<string, any> = {
   droplets: Droplets,
@@ -30,11 +32,19 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://plusproservices.ca/services",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Home Repair Services in Lower Mainland BC | PlusPro Services",
+    description: "Professional handyman, plumbing, drain cleaning, bathroom repairs & tile installation in Lower Mainland, BC.",
+    images: ["https://plusproservices.ca/og.png"],
+  },
 };
 
 export default function ServicesPage() {
   return (
-    <div className="py-16 bg-background min-h-screen">
+    <div>
+      <EnhancedSchema type="BreadcrumbList" breadcrumbs={[{ name: "Home", url: "/" }, { name: "Services", url: "/services" }]} />
+      <div className="py-16 bg-background min-h-screen">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-quantum text-primary mb-6">
@@ -86,6 +96,7 @@ export default function ServicesPage() {
           </Button>
         </div>
       </div>
+    </div>
     </div>
   );
 }

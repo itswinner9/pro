@@ -126,6 +126,12 @@ export async function generateMetadata({ params }: PageProps) {
     alternates: {
       canonical: `${baseUrl}${service.slug}`,
     },
+    twitter: {
+      card: "summary_large_image",
+      title: `${details.title} | PlusPro Services | Lower Mainland BC`,
+      description: details.metaDescription,
+      images: [`${baseUrl}/og.png`],
+    },
   };
 }
 
@@ -141,6 +147,7 @@ export default async function ServicePage({ params }: PageProps) {
   return (
     <>
       <EnhancedSchema type="Service" serviceName={details.title} locationName="Lower Mainland" />
+      <EnhancedSchema type="BreadcrumbList" breadcrumbs={[{ name: "Home", url: "/" }, { name: "Services", url: "/services" }, { name: details.title, url: service.slug }]} />
       <div className="py-16 bg-background min-h-screen">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">

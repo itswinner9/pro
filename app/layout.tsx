@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Montserrat, Syncopate } from "next/font/google";
 import "./globals.css";
 import ConditionalHeader from "@/components/layout/ConditionalHeader";
 import ConditionalFooter from "@/components/layout/ConditionalFooter";
 import EnhancedSchema from "@/components/seo/EnhancedSchema";
 import TrackingScripts from "@/components/seo/TrackingScripts";
-import { ClerkSetupMessage } from "@/components/ClerkSetupMessage";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -20,6 +18,9 @@ const syncopate = Syncopate({
   variable: "--font-syncopate",
 });
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plusproservices.ca";
+const gscVerification = process.env.NEXT_PUBLIC_GSC_VERIFICATION;
+
 export const metadata: Metadata = {
   title: "PlusPro Home | Professional Repair Services",
   description: "Professional handyman, plumbing, drain cleaning, and bathroom repair services in Lower Mainland, British Columbia. Fast, reliable, and insured. Get a free quote today!",
@@ -29,7 +30,18 @@ export const metadata: Metadata = {
     description: "Professional handyman, plumbing, drain cleaning, and bathroom repair services in Lower Mainland, British Columbia.",
     type: "website",
     locale: "en_CA",
+    url: baseUrl,
+    images: [{ url: `${baseUrl}/og.png`, width: 1200, height: 630, alt: "PlusPro Services" }],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "PlusPro Services | Handyman, Plumbing & Drain Cleaning",
+    description: "Professional handyman, plumbing, drain cleaning, and bathroom repair services in Lower Mainland, British Columbia.",
+    images: [`${baseUrl}/og.png`],
+  },
+  ...(gscVerification && {
+    verification: { google: gscVerification },
+  }),
 };
 
 export default function RootLayout({
@@ -37,34 +49,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim();
-
   const fontClass = `${montserrat.variable} ${syncopate.variable} ${montserrat.className} antialiased min-h-screen`;
 
-  if (!clerkPublishableKey) {
-    return (
-      <html lang="en">
-        <body className={fontClass}>
-          <ClerkSetupMessage />
-        </body>
-      </html>
-    );
-  }
-
   return (
-    <ClerkProvider publishableKey={clerkPublishableKey}>
-      <html lang="en">
-        <head>
-          <EnhancedSchema type="LocalBusiness" />
-        </head>
-        <body className={fontClass}>
-          <TrackingScripts />
-          <ConditionalHeader />
-          <main className="pt-0 min-h-screen">{children}</main>
-          <ConditionalFooter />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <head>
+        <EnhancedSchema type="LocalBusiness" />
+      </head>
+      <body className={fontClass}>
+        <TrackingScripts />
+        <ConditionalHeader />
+        <main className="pt-0 min-h-screen">{children}</main>
+        <ConditionalFooter />
+      </body>
+    </html>
   );
 }
-

@@ -17,6 +17,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://plusproservices.ca/reviews",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Customer Reviews | 5-Star Rated PlusPro Services | Lower Mainland BC",
+    description: "Read what our customers say about PlusPro Services. 5-star rated handyman and plumbing services in Lower Mainland, BC.",
+    images: ["https://plusproservices.ca/og.png"],
+  },
 };
 
 const reviews = [
@@ -70,9 +76,36 @@ const reviews = [
   },
 ];
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plusproservices.ca";
+const aggregateRatingSchema = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: "PlusPro Services",
+  url: baseUrl,
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "5",
+    bestRating: "5",
+    worstRating: "1",
+    reviewCount: String(reviews.length),
+  },
+  review: reviews.map((r) => ({
+    "@type": "Review",
+    author: { "@type": "Person", name: r.name },
+    datePublished: r.date,
+    reviewRating: { "@type": "Rating", ratingValue: String(r.rating), bestRating: "5" },
+    reviewBody: r.text,
+  })),
+};
+
 export default function ReviewsPage() {
   return (
-    <div className="py-16 bg-background min-h-screen">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aggregateRatingSchema) }}
+      />
+      <div className="py-16 bg-background min-h-screen">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-quantum text-primary mb-6 text-center">
@@ -124,6 +157,7 @@ export default function ReviewsPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

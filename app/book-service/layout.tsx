@@ -13,6 +13,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://plusproservices.ca/book-service",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Book Service | PlusPro Services | Lower Mainland BC",
+    description: "Book professional home repair services in Lower Mainland, BC. Fast, reliable, licensed & insured.",
+    images: ["https://plusproservices.ca/og.png"],
+  },
 };
 
 export default function BookServiceLayout({

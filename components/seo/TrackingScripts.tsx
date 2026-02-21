@@ -5,7 +5,6 @@ import Script from "next/script";
 export default function TrackingScripts() {
   const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   const CLARITY_ID = process.env.NEXT_PUBLIC_MICROSOFT_CLARITY_ID;
-  const GSC_VERIFICATION = process.env.NEXT_PUBLIC_GSC_VERIFICATION;
 
   return (
     <>
@@ -40,11 +39,6 @@ export default function TrackingScripts() {
             })(window, document, "clarity", "script", "${CLARITY_ID}");
           `}
         </Script>
-      )}
-
-      {/* Google Search Console Verification */}
-      {GSC_VERIFICATION && (
-        <meta name="google-site-verification" content={GSC_VERIFICATION} />
       )}
     </>
   );

@@ -3,19 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { UserButton, useUser } from "@clerk/nextjs";
 import { PHONE_NUMBER } from "@/lib/utils";
-import { Menu, X, Phone, User } from "lucide-react";
+import { Menu, X, Phone } from "lucide-react";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isSignedIn, isLoaded } = useUser();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -98,30 +91,6 @@ export default function Header() {
                 <Phone className="w-4 h-4" />
                 <span className="hidden lg:inline">Call Now</span>
               </a>
-              
-              {/* Auth - Minimal Icon - Always render same structure */}
-              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
-                {mounted && isLoaded && isSignedIn ? (
-                  <Link
-                    href="/profile"
-                    className="w-full h-full rounded-full hover:bg-[var(--primary-color)] hover:text-white flex items-center justify-center transition-all duration-300 group"
-                    title="Profile"
-                  >
-                    <User className="w-5 h-5 text-slate-600 group-hover:text-white transition-colors" />
-                  </Link>
-                ) : mounted && isLoaded && !isSignedIn ? (
-                  <Link
-                    href="/sign-in"
-                    className="w-full h-full rounded-full hover:bg-[var(--primary-color)] hover:text-white flex items-center justify-center transition-all duration-300 group relative"
-                    title="Sign In / Register"
-                  >
-                    <User className="w-5 h-5 text-slate-600 group-hover:text-white transition-colors" />
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-[var(--accent-gold)] rounded-full border-2 border-white"></span>
-                  </Link>
-                ) : (
-                  <User className="w-5 h-5 text-slate-600" />
-                )}
-              </div>
 
               {/* CTA Button */}
               <Link
@@ -250,57 +219,6 @@ export default function Header() {
                   </Link>
                 </div>
               </div>
-
-              {/* Auth Section */}
-              {mounted && isLoaded ? (
-                <div>
-                  <h3 className="text-xs font-bold text-[var(--accent-gold)] tracking-widest uppercase mb-4">Account</h3>
-                  <div className="space-y-3">
-                    {isSignedIn ? (
-                      <Link
-                        href="/profile"
-                        onClick={closeMobileMenu}
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors"
-                      >
-                        <div className="w-10 h-10 bg-[var(--primary-color)] rounded-xl flex items-center justify-center">
-                          <User className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-slate-900">My Profile</p>
-                          <p className="text-sm text-slate-500">Manage account</p>
-                        </div>
-                      </Link>
-                    ) : (
-                      <Link
-                        href="/sign-in"
-                        onClick={closeMobileMenu}
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors"
-                      >
-                        <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
-                          <User className="w-5 h-5 text-slate-600" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-slate-900">Sign In / Register</p>
-                          <p className="text-sm text-slate-500">Access your account</p>
-                        </div>
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <h3 className="text-xs font-bold text-[var(--accent-gold)] tracking-widest uppercase mb-4">Account</h3>
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-                    <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
-                      <User className="w-5 h-5 text-slate-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-slate-900">Loading...</p>
-                      <p className="text-sm text-slate-500">Please wait</p>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* Quick Actions */}
               <div>

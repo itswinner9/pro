@@ -19,6 +19,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://plusproservices.ca",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "PlusPro Services | Professional Home Repair in Lower Mainland BC",
+    description: "Expert handyman, plumbing, drain cleaning & bathroom repair services in Lower Mainland, BC. Fast, reliable, licensed & insured.",
+    images: ["https://plusproservices.ca/og.png"],
+  },
 };
 
 const serviceIcons: Record<string, string> = {
