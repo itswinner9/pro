@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #0A1A72;
+  --accent-gold: #C5A059;
+  --bg-off-white: #FAF9F6;
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-off-white);
+    color: #1a1a1a;
+  }
+  .font-quantum {
+    font-family: var(--font-syncopate), sans-serif;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+}
+
+@layer components {
+  .luxury-card {
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+  .luxury-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(10, 26, 114, 0.08);
+  }
+  
+  /* Modern form inputs */
+  .modern-input {
+    @apply border-slate-200 rounded-xl h-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]/10 transition-all;
+  }
+  
+  /* Modern buttons */
+  .modern-btn-primary {
+    @apply bg-[var(--primary-color)] text-white rounded-xl font-bold tracking-widest text-xs uppercase hover:bg-[var(--primary-color)]/90 transition-all hover:shadow-lg;
+  }
+  
+  .modern-btn-secondary {
+    @apply border-slate-200 bg-white text-slate-900 rounded-xl font-bold tracking-widest text-xs uppercase hover:bg-slate-50 transition-all;
+  }
+  
+  /* Modern labels */
+  .modern-label {
+    @apply text-xs font-bold tracking-widest uppercase text-slate-700;
+  }
+  
+  /* Status badges */
+  .status-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase;
+  }
+  
+  .status-new {
+    @apply bg-blue-50 text-blue-700;
+  }
+  
+  .status-pending {
+    @apply bg-orange-50 text-orange-700;
+  }
+  
+  .status-completed {
+    @apply bg-green-50 text-green-700;
+  }
+  
+  .status-cancelled {
+    @apply bg-red-50 text-red-700;
+  }
+  
+  #main-nav {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-scrolled {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    margin-top: 0.5rem !important;
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+    width: 95% !important;
+  }
+  
+  /* Responsive navbar spacing */
+  @media (max-width: 1024px) {
+    .nav-scrolled {
+      width: 98% !important;
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .nav-scrolled {
+      width: 100% !important;
+      border-radius: 1rem !important;
+      margin: 0.5rem 0.5rem 0 0.5rem !important;
+    }
+  }
+}
+  
+  /* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+section {
+  scroll-margin-top: 80px;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Modern spacing utilities */
+  .section-padding {
+    @apply py-16 px-6;
+  }
+  
+  .container-modern {
+    @apply container mx-auto px-6;
+  }
+  
+  /* Modern text utilities */
+  .text-heading {
+    @apply font-quantum text-3xl md:text-4xl font-bold text-[var(--primary-color)];
+  }
+  
+  .text-subheading {
+    @apply font-quantum text-lg font-bold text-[var(--primary-color)];
+  }
+  
+  .text-accent {
+    @apply font-quantum text-[10px] tracking-[0.5em] text-[var(--accent-gold)] font-bold;
+  }
+}
+
