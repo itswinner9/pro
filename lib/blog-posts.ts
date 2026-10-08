@@ -109,6 +109,61 @@ export const BLOG_POSTS: BlogPost[] = [
     created_at: "2024-02-10T10:00:00Z",
     updated_at: "2024-02-10T10:00:00Z",
   },
+  {
+    id: "4",
+    title: "When to Call a Handyman vs. a Specialist",
+    slug: "when-to-call-handyman-vs-specialist",
+    excerpt: "Not sure whether to hire a handyman or a licensed plumber/electrician? Here's when each makes sense for Lower Mainland homeowners.",
+    content: `
+      <p>Home repairs can range from simple fixes to complex projects. Knowing when to call a handyman versus a licensed specialist saves time and money.</p>
+      <h2>Handyman Jobs</h2>
+      <p>General handymen handle small repairs: drywall patches, door adjustments, furniture assembly, painting touch-ups, minor caulking, and basic fixture swaps. For non-plumbing, non-electrical work, a skilled handyman is often the right choice.</p>
+      <h2>When You Need a Specialist</h2>
+      <p>Plumbing work involving supply lines, drain lines, or gas requires a licensed plumber. Electrical work beyond replacing a light bulb needs a certified electrician. Major structural or permit-required work should go to licensed contractors.</p>
+      <h2>PlusPro Can Help</h2>
+      <p>PlusPro Services offers both handyman services and licensed plumbing work across Vancouver, Surrey, Burnaby, and the Lower Mainland. We'll direct you to the right service for your project. <a href="/contact">Contact us</a> for a free quote.</p>
+    `,
+    featured_image: null,
+    author: "PlusPro Services",
+    category: "Handyman",
+    tags: ["handyman", "plumber", "home repair", "Lower Mainland", "Vancouver"],
+    meta_title: "Handyman vs. Specialist: When to Call Each | PlusPro Services",
+    meta_description: "Handyman or plumber? Learn when to hire a general handyman vs. a licensed specialist for home repairs in Lower Mainland BC.",
+    meta_keywords: "handyman Vancouver, when to call plumber, home repair specialist Surrey",
+    is_published: true,
+    published_at: "2024-03-01T10:00:00Z",
+    views: 0,
+    created_at: "2024-03-01T10:00:00Z",
+    updated_at: "2024-03-01T10:00:00Z",
+  },
+  {
+    id: "5",
+    title: "Seasonal Home Maintenance Checklist for the Lower Mainland",
+    slug: "seasonal-home-maintenance-checklist-lower-mainland",
+    excerpt: "Rain, salt air, and older plumbing make a spring and fall checkup worth it. Here is what Lower Mainland homeowners should check twice a year.",
+    content: `
+      <p>Home maintenance in the Lower Mainland is mostly about water: rain on the roof, moisture in bathrooms, and pipes that work hard all winter. A short seasonal visit prevents the leaks and drafts that turn into emergency calls.</p>
+      <h2>Fall: before the rain settles in</h2>
+      <p>Clear gutters and downspouts, reseal cracked exterior caulk, check weatherstripping on doors, and look at outdoor taps and hose bibs. Inside, check toilet bases, supply lines, and caulk around tubs and showers. These are the spots that fail first in Vancouver and Surrey winters.</p>
+      <h2>Spring: after the wet season</h2>
+      <p>Look for peeling paint or caulk, sticky doors, sagging screens, and slow drains after months of indoor use. If several fixtures drain slowly, the issue may be in the main line rather than one sink.</p>
+      <h2>What PlusPro handles on a maintenance visit</h2>
+      <p>We combine upkeep with licensed plumbing when needed: fixtures, caulking, gutters, hardware, and moisture checks. If drain cleaning or a larger repair is required, we do that work instead of sending you to a second company.</p>
+      <p>Serving Vancouver, Surrey, Burnaby, Richmond, Coquitlam, and the rest of the Lower Mainland. <a href="/services/home-maintenance">Learn about home maintenance</a> or <a href="/book-service">book a visit</a>.</p>
+    `,
+    featured_image: null,
+    author: "PlusPro Services",
+    category: "Home Maintenance",
+    tags: ["home maintenance", "seasonal checklist", "Lower Mainland", "Vancouver", "plumbing"],
+    meta_title: "Seasonal Home Maintenance Checklist | Lower Mainland BC",
+    meta_description: "Spring and fall home maintenance for Vancouver and the Lower Mainland: gutters, caulking, fixtures, and moisture checks. Book PlusPro for a visit.",
+    meta_keywords: "home maintenance Vancouver, seasonal home checkup Surrey, fall gutter cleaning Burnaby, Lower Mainland upkeep",
+    is_published: true,
+    published_at: "2026-03-15T10:00:00Z",
+    views: 0,
+    created_at: "2026-03-15T10:00:00Z",
+    updated_at: "2026-03-15T10:00:00Z",
+  },
 ];
 
 export function getPublishedBlogPosts(): BlogPost[] {

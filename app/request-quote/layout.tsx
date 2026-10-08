@@ -1,24 +1,25 @@
 import { Metadata } from "next";
+import { SITE_URL } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Request Free Quote | PlusPro Services | Lower Mainland BC",
-  description: "Get a free quote for handyman, plumbing, drain cleaning & repair services in Vancouver, Surrey, Burnaby, Richmond, Coquitlam. Fast, accurate estimates. No obligation.",
-  keywords: "free quote Lower Mainland, handyman estimate Vancouver, plumbing quote Surrey, repair estimate Burnaby, get quote BC",
+  title: "Free Quote | Home Maintenance Lower Mainland BC",
+  description: "Get a free quote for home maintenance, plumbing, drain cleaning, and handyman work in Vancouver, Surrey, Burnaby, and the Lower Mainland. No obligation.",
+  keywords: "home maintenance quote Lower Mainland, plumbing estimate Vancouver, handyman quote Surrey, drain cleaning quote Burnaby",
   openGraph: {
-    title: "Request Free Quote | PlusPro Services | Lower Mainland BC",
-    description: "Get a free quote for professional home repair services in Lower Mainland, BC. Fast, accurate estimates.",
+    title: "Free Quote | Home Maintenance Lower Mainland BC",
+    description: "Get a free quote for home maintenance, plumbing, and handyman service in Lower Mainland, BC.",
     type: "website",
     locale: "en_CA",
-    url: "https://plusproservices.ca/request-quote",
+    url: `${SITE_URL}/request-quote`,
   },
   alternates: {
-    canonical: "https://plusproservices.ca/request-quote",
+    canonical: `${SITE_URL}/request-quote`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Request Free Quote | PlusPro Services | Lower Mainland BC",
-    description: "Get a free quote for professional home repair services in Lower Mainland, BC. Fast, accurate estimates.",
-    images: ["https://plusproservices.ca/og.png"],
+    title: "Free Quote | Home Maintenance Lower Mainland BC",
+    description: "Get a free quote for home maintenance, plumbing, and handyman service in Lower Mainland, BC.",
+    images: [`${SITE_URL}/og.png`],
   },
 };
 

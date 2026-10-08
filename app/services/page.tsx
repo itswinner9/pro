@@ -1,57 +1,53 @@
-import React from "react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SERVICES } from "@/lib/types";
-import { Phone, Droplets, Wrench, Bath, Square, Hammer, AlertCircle } from "lucide-react";
-import { PHONE_NUMBER } from "@/lib/utils";
+import { Phone, Droplets, Wrench, Bath, Square, Hammer, AlertCircle, Home } from "lucide-react";
+import { PHONE_NUMBER, SITE_URL } from "@/lib/utils";
 import EnhancedSchema from "@/components/seo/EnhancedSchema";
+import { Metadata } from "next";
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   droplets: Droplets,
   wrench: Wrench,
   bath: Bath,
   square: Square,
   hammer: Hammer,
-  'alert-circle': AlertCircle,
+  home: Home,
+  "alert-circle": AlertCircle,
 };
 
-import { Metadata } from "next";
-
 export const metadata: Metadata = {
-  title: "Home Repair Services in Lower Mainland BC | PlusPro Services",
-  description: "Professional handyman, plumbing, drain cleaning, bathroom repairs & tile installation in Vancouver, Surrey, Burnaby, Richmond, Coquitlam. Licensed, insured, same-day service available.",
-  keywords: "handyman services Lower Mainland, plumbing Vancouver, drain cleaning Surrey, bathroom repairs Burnaby, tile installation Richmond, emergency repairs Coquitlam, home repair BC",
+  title: "Home Maintenance & Repair Services | Lower Mainland BC",
+  description: "Home maintenance, plumbing, drain cleaning, handyman, bathroom repairs, and tile work in Vancouver, Surrey, Burnaby, and the Lower Mainland. Licensed and insured.",
+  keywords: "home maintenance Lower Mainland, plumbing Vancouver, drain cleaning Surrey, handyman Burnaby, bathroom repairs BC, emergency repairs Coquitlam",
   openGraph: {
-    title: "Home Repair Services in Lower Mainland BC | PlusPro Services",
-    description: "Professional handyman, plumbing, drain cleaning, bathroom repairs & tile installation in Lower Mainland, BC.",
+    title: "Home Maintenance & Repair Services | Lower Mainland BC",
+    description: "Home maintenance, plumbing, drain cleaning, handyman, bathroom repairs, and tile work in Lower Mainland, BC.",
     type: "website",
     locale: "en_CA",
-    url: "https://plusproservices.ca/services",
+    url: `${SITE_URL}/services`,
   },
-  alternates: {
-    canonical: "https://plusproservices.ca/services",
-  },
+  alternates: { canonical: `${SITE_URL}/services` },
   twitter: {
     card: "summary_large_image",
-    title: "Home Repair Services in Lower Mainland BC | PlusPro Services",
-    description: "Professional handyman, plumbing, drain cleaning, bathroom repairs & tile installation in Lower Mainland, BC.",
-    images: ["https://plusproservices.ca/og.png"],
+    title: "Home Maintenance & Repair Services | Lower Mainland BC",
+    description: "Home maintenance, plumbing, drain cleaning, handyman, bathroom repairs, and tile work in Lower Mainland, BC.",
+    images: [`${SITE_URL}/og.png`],
   },
 };
 
 export default function ServicesPage() {
   return (
-    <div>
+    <div className="py-16 bg-white min-h-screen">
       <EnhancedSchema type="BreadcrumbList" breadcrumbs={[{ name: "Home", url: "/" }, { name: "Services", url: "/services" }]} />
-      <div className="py-16 bg-background min-h-screen">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-quantum text-primary mb-6">
-            Professional Home Repair Services in Lower Mainland BC
+          <h1 className="font-heading text-4xl md:text-5xl font-bold text-[var(--primary-color)] mb-6 uppercase tracking-tight">
+            Home Maintenance &amp; Repair in Lower Mainland BC
           </h1>
-          <p className="text-xl text-dark/80">
-            Professional, reliable, and affordable services for all your home repair and maintenance needs.
+          <p className="text-xl text-slate-600">
+            Seasonal upkeep, plumbing, drain cleaning, and handyman work — licensed, insured, and local.
           </p>
         </div>
 
@@ -62,21 +58,17 @@ export default function ServicesPage() {
               <Card key={service.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="pt-6">
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="p-3 bg-primary/10 rounded-lg">
-                      <Icon className="w-6 h-6 text-primary" />
+                    <div className="p-3 bg-[var(--primary-color)]/10 rounded-lg">
+                      <Icon className="w-6 h-6 text-[var(--primary-color)]" />
                     </div>
-                    <div className="flex-1">
-                      <CardTitle className="text-xl mb-2">
-                        {service.title}
-                      </CardTitle>
-                    </div>
+                    <CardTitle className="text-xl mb-2 text-slate-900">{service.title}</CardTitle>
                   </div>
-                  <CardDescription className="mb-6">{service.description}</CardDescription>
+                  <CardDescription className="mb-6 text-slate-600">{service.description}</CardDescription>
                   <div className="flex gap-2">
                     <Button asChild variant="outline" size="sm" className="flex-1">
                       <Link href={service.slug}>Learn More</Link>
                     </Button>
-                    <Button asChild size="sm" className="flex-1">
+                    <Button asChild size="sm" className="flex-1 bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/90">
                       <Link href="/book-service">Book Now</Link>
                     </Button>
                   </div>
@@ -87,9 +79,9 @@ export default function ServicesPage() {
         </div>
 
         <div className="text-center">
-          <p className="text-lg mb-6">Need help choosing a service?</p>
-          <Button asChild size="lg">
-            <a href={`tel:${PHONE_NUMBER.replace(/\D/g, '')}`}>
+          <p className="text-lg mb-6 text-slate-600">Need help choosing a service?</p>
+          <Button asChild size="lg" className="bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/90">
+            <a href={`tel:${PHONE_NUMBER.replace(/\D/g, "")}`}>
               <Phone className="w-5 h-5 mr-2" />
               Call Us: {PHONE_NUMBER}
             </a>
@@ -97,7 +89,5 @@ export default function ServicesPage() {
         </div>
       </div>
     </div>
-    </div>
   );
 }
-

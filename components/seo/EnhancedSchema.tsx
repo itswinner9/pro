@@ -1,10 +1,11 @@
 import { SERVICES, LOCATIONS } from "@/lib/types";
-import { PHONE_NUMBER, EMAIL } from "@/lib/utils";
+import { PHONE_NUMBER, EMAIL, SITE_URL } from "@/lib/utils";
 
 interface EnhancedSchemaProps {
   type: "LocalBusiness" | "Service" | "FAQ" | "BreadcrumbList" | "Article";
   data?: any;
   serviceName?: string;
+  serviceId?: string;
   locationName?: string;
   faqItems?: Array<{ question: string; answer: string }>;
   breadcrumbs?: Array<{ name: string; url: string }>;
@@ -14,11 +15,12 @@ export default function EnhancedSchema({
   type,
   data,
   serviceName,
+  serviceId,
   locationName,
   faqItems,
   breadcrumbs,
 }: EnhancedSchemaProps) {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plusproservices.ca";
+  const baseUrl = SITE_URL;
 
   let schema: any = {
     "@context": "https://schema.org",
@@ -28,12 +30,15 @@ export default function EnhancedSchema({
   if (type === "LocalBusiness") {
     schema = {
       ...schema,
+      "@id": `${baseUrl}/#organization`,
       name: "PlusPro Services",
+      image: `${baseUrl}/logo.png`,
       description:
-        "Professional handyman, plumbing, drain cleaning, and repair services in Lower Mainland, British Columbia. Fast, reliable, licensed & insured.",
+        "Home maintenance, plumbing, drain cleaning, and handyman service in Lower Mainland, British Columbia. Fast, licensed, and insured.",
       url: baseUrl,
       telephone: PHONE_NUMBER,
       email: EMAIL,
+      sameAs: [],
       address: {
         "@type": "PostalAddress",
         addressLocality: "Lower Mainland",
@@ -51,7 +56,7 @@ export default function EnhancedSchema({
       })),
       hasOfferCatalog: {
         "@type": "OfferCatalog",
-        name: "Home Repair Services",
+        name: "Home Maintenance and Repair Services",
         itemListElement: SERVICES.map((service, index) => ({
           "@type": "Offer",
           itemOffered: {
@@ -86,12 +91,18 @@ export default function EnhancedSchema({
     };
   }
 
-  if (type === "Service" && serviceName) {
-    const service = SERVICES.find((s) => s.title === serviceName);
+  if (type === "Service" && (serviceName || serviceId)) {
+    const service = SERVICES.find(
+      (s) =>
+        s.id === serviceId ||
+        s.slug === `/services/${serviceId}` ||
+        s.title === serviceName
+    );
     schema = {
       ...schema,
-      name: serviceName,
-      description: service?.description || `${serviceName} in Lower Mainland, BC`,
+      name: service?.title || serviceName,
+      description: service?.description || `${serviceName || service?.title} in Lower Mainland, BC`,
+      url: service ? `${baseUrl}${service.slug}` : undefined,
       provider: {
         "@type": "LocalBusiness",
         name: "PlusPro Services",
@@ -101,7 +112,7 @@ export default function EnhancedSchema({
         "@type": "City",
         name: locationName || "Lower Mainland",
       },
-      serviceType: serviceName,
+      serviceType: service?.title || serviceName,
     };
   }
 

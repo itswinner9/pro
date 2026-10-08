@@ -1,19 +1,22 @@
 import { MetadataRoute } from "next";
 import { SERVICES, LOCATIONS } from "@/lib/types";
 import { getPublishedBlogPosts } from "@/lib/blog-posts";
+import { SITE_URL } from "@/lib/utils";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plusproservices.ca";
+  const baseUrl = SITE_URL;
 
   const routes = [
     "",
     "/services",
     "/about",
-    "/reviews",
+    "/careers",
     "/contact",
+    "/reviews",
     "/book-service",
     "/request-quote",
     "/blog",
+    "/privacy",
   ];
 
   const serviceRoutes = SERVICES.map((service) => ({

@@ -1,23 +1,24 @@
 import { Metadata } from "next";
+import { SITE_URL } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Book Service | PlusPro Services | Lower Mainland BC",
-  description: "Book professional home repair services in Lower Mainland, BC. Serving Vancouver, Surrey, Burnaby, Richmond, Coquitlam. Same-day service available. Licensed & insured.",
-  keywords: "book handyman Lower Mainland, schedule plumbing Vancouver, book service Surrey, home repair booking BC, emergency repair Lower Mainland",
+  title: "Book Home Maintenance | PlusPro | Lower Mainland BC",
+  description: "Book home maintenance, plumbing, or handyman service in Vancouver, Surrey, Burnaby, and the Lower Mainland. Same-day visits available. Licensed and insured.",
+  keywords: "book home maintenance Lower Mainland, schedule plumbing Vancouver, book handyman Surrey, emergency repair Lower Mainland",
   openGraph: {
-    title: "Book Service | PlusPro Services | Lower Mainland BC",
-    description: "Book professional home repair services in Lower Mainland, BC. Fast, reliable, licensed & insured.",
+    title: "Book Home Maintenance | PlusPro | Lower Mainland BC",
+    description: "Book home maintenance, plumbing, or handyman service in Lower Mainland, BC. Fast, licensed, and insured.",
     type: "website",
     locale: "en_CA",
   },
   alternates: {
-    canonical: "https://plusproservices.ca/book-service",
+    canonical: `${SITE_URL}/book-service`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Book Service | PlusPro Services | Lower Mainland BC",
-    description: "Book professional home repair services in Lower Mainland, BC. Fast, reliable, licensed & insured.",
-    images: ["https://plusproservices.ca/og.png"],
+    title: "Book Home Maintenance | PlusPro | Lower Mainland BC",
+    description: "Book home maintenance, plumbing, or handyman service in Lower Mainland, BC. Fast, licensed, and insured.",
+    images: [`${SITE_URL}/og.png`],
   },
 };
 

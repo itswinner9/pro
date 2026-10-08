@@ -4,6 +4,7 @@ export type ServiceType =
   | 'bathroom-repairs'
   | 'tile-installation'
   | 'handyman-services'
+  | 'home-maintenance'
   | 'emergency-repairs';
 
 export interface Service {
@@ -49,6 +50,13 @@ export const SERVICES: Service[] = [
     description: 'General handyman services for all your home repair needs.',
     icon: 'hammer',
     slug: '/services/handyman-services',
+  },
+  {
+    id: 'home-maintenance',
+    title: 'Home Maintenance',
+    description: 'Ongoing home upkeep: seasonal checks, caulking, fixtures, gutters, and preventive repairs.',
+    icon: 'home',
+    slug: '/services/home-maintenance',
   },
   {
     id: 'emergency-repairs',

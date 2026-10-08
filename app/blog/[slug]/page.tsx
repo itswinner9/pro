@@ -1,9 +1,9 @@
 import { getBlogPostBySlug } from "@/lib/blog-posts";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { Calendar, Eye, User, ArrowLeft, Clock, Share2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { SITE_URL } from "@/lib/utils";
 
 export async function generateMetadata({
   params,
@@ -19,7 +19,7 @@ export async function generateMetadata({
     };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plusproservices.ca";
+  const siteUrl = SITE_URL;
 
   return {
     title: blog.meta_title || `${blog.title} | PlusPro Services Blog`,
@@ -58,7 +58,7 @@ export default async function BlogPostPage({
     notFound();
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://plusproservices.ca";
+  const siteUrl = SITE_URL;
   const publishedDate = blog.published_at
     ? new Date(blog.published_at)
     : new Date(blog.created_at);
@@ -89,18 +89,12 @@ export default async function BlogPostPage({
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogStructuredData) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogStructuredData) }} />
       <div className="min-h-screen bg-white">
         <div className="border-b border-slate-200 bg-white sticky top-0 z-10">
           <div className="container mx-auto px-6 py-4">
-            <Link
-              href="/blog"
-              className="inline-flex items-center gap-2 text-slate-600 hover:text-[var(--primary-color)] transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
+            <Link href="/blog" className="inline-flex items-center gap-2 text-slate-600 hover:text-[var(--primary-color)] transition-colors">
+              <span className="material-symbols-outlined text-[20px]">arrow_back</span>
               <span className="font-medium">Back to Blog</span>
             </Link>
           </div>
@@ -115,51 +109,41 @@ export default async function BlogPostPage({
             </div>
           )}
 
-          <h1 className="font-quantum text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight" itemProp="headline">
+          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight uppercase tracking-tight" itemProp="headline">
             {blog.title}
           </h1>
 
           <div className="flex flex-wrap items-center gap-6 text-sm text-slate-600 mb-8 pb-8 border-b border-slate-200">
             {blog.author && (
               <div className="flex items-center gap-2">
-                <User className="w-4 h-4" />
+                <span className="material-symbols-outlined text-[18px]">person</span>
                 <span itemProp="author">{blog.author}</span>
               </div>
             )}
             {blog.published_at && (
               <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
+                <span className="material-symbols-outlined text-[18px]">schedule</span>
                 <time dateTime={blog.published_at} itemProp="datePublished">
-                  {publishedDate.toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {publishedDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
                 </time>
               </div>
             )}
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
+              <span className="material-symbols-outlined text-[18px]">schedule</span>
               <span>{Math.ceil((blog.content?.length || 0) / 1000)} min read</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Eye className="w-4 h-4" />
-              <span>{blog.views ?? 0} views</span>
-            </div>
+            {(blog.views ?? 0) > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">visibility</span>
+                <span>{blog.views} views</span>
+              </div>
+            )}
           </div>
 
           {blog.featured_image && (
             <div className="mb-12 rounded-2xl overflow-hidden shadow-lg">
               <div className="relative aspect-video">
-                <Image
-                  src={blog.featured_image}
-                  alt={blog.title}
-                  fill
-                  className="object-cover"
-                  itemProp="image"
-                  priority
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 896px"
-                />
+                <Image src={blog.featured_image} alt={blog.title} fill className="object-cover" itemProp="image" priority sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 896px" />
               </div>
             </div>
           )}
@@ -171,7 +155,7 @@ export default async function BlogPostPage({
           )}
 
           <div
-            className="prose prose-lg prose-slate max-w-none mb-12 prose-headings:font-quantum prose-headings:text-slate-900 prose-p:text-slate-700 prose-p:leading-relaxed prose-a:text-[var(--primary-color)] prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl prose-img:shadow-lg prose-strong:text-slate-900 prose-ul:list-disc prose-ol:list-decimal"
+            className="prose prose-lg prose-slate max-w-none mb-12 prose-headings:text-slate-900 prose-p:text-slate-700 prose-p:leading-relaxed prose-a:text-[var(--primary-color)] prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl prose-strong:text-slate-900"
             itemProp="articleBody"
             dangerouslySetInnerHTML={{ __html: blog.content }}
           />
@@ -180,11 +164,7 @@ export default async function BlogPostPage({
             <div className="flex flex-wrap gap-3 pt-8 border-t border-slate-200 mb-12">
               <span className="text-sm font-semibold text-slate-700 mr-2">Tags:</span>
               {blog.tags.map((tag, index) => (
-                <Link
-                  key={index}
-                  href={`/blog?tag=${encodeURIComponent(tag)}`}
-                  className="px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-[var(--primary-color)] hover:text-white transition-colors"
-                >
+                <Link key={index} href={`/blog?tag=${encodeURIComponent(tag)}`} className="px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-[var(--primary-color)] hover:text-white transition-colors">
                   #{tag}
                 </Link>
               ))}
@@ -194,19 +174,11 @@ export default async function BlogPostPage({
           <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
             <h3 className="font-semibold text-lg text-slate-900 mb-4">Share this article</h3>
             <div className="flex items-center gap-4">
-              <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(blog.title)}&url=${siteUrl}/blog/${blog.slug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                <Share2 className="w-4 h-4" />
+              <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(blog.title)}&url=${siteUrl}/blog/${blog.slug}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors text-slate-700">
+                <span className="material-symbols-outlined text-[20px]">share</span>
                 <span className="text-sm font-medium">Share</span>
               </a>
-              <Link
-                href="/contact"
-                className="px-6 py-2 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-color)]/90 transition-colors font-medium"
-              >
+              <Link href="/contact" className="px-6 py-2 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-color)]/90 font-medium">
                 Contact Us
               </Link>
             </div>

@@ -15,6 +15,7 @@ export default function RotatingCityText() {
     return () => clearInterval(interval);
   }, []);
 
-  return <span>{cities[currentCity]}</span>;
+  // Force Quantum Latin on the city word so the hero headline stays consistent.
+  return <span className="font-quantum">{cities[currentCity]}</span>;
 }
 
